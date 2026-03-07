@@ -1,0 +1,129 @@
+/* F1 Analytics — Claude light tan theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background-color: #F5EDE4;
+  color: #2C1810;
+  font-family: Inter, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Dash dropdown overrides */
+.f1-dropdown .Select-control {
+  background-color: #EDE3D8 !important;
+  border-color: #C8B8A8 !important;
+  border-radius: 6px !important;
+  color: #2C1810 !important;
+  min-height: 36px !important;
+  box-shadow: none !important;
+}
+
+.f1-dropdown .Select-value-label,
+.f1-dropdown .Select-placeholder {
+  color: #5C4030 !important;
+  font-size: 13px !important;
+}
+
+.f1-dropdown .Select-arrow {
+  border-top-color: #8A7060 !important;
+}
+
+.f1-dropdown.is-focused .Select-control,
+.f1-dropdown .Select-control:hover {
+  border-color: #C96A2A !important;
+  box-shadow: none !important;
+}
+
+.f1-dropdown .Select-menu-outer {
+  background-color: #EDE3D8 !important;
+  border-color: #C8B8A8 !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 24px rgba(80, 40, 10, 0.12) !important;
+  z-index: 100 !important;
+}
+
+.f1-dropdown .Select-option {
+  background-color: #EDE3D8 !important;
+  color: #5C4030 !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+}
+
+.f1-dropdown .Select-option.is-focused {
+  background-color: #E0D4C8 !important;
+  color: #2C1810 !important;
+}
+
+.f1-dropdown .Select-option.is-selected {
+  background-color: rgba(201, 106, 42, 0.12) !important;
+  color: #C96A2A !important;
+  font-weight: 600 !important;
+}
+
+/* Driver checklist pills */
+.driver-checklist label {
+  transition: border-color 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.driver-checklist label:hover {
+  background-color: #E0D4C8 !important;
+  border-color: #C96A2A !important;
+}
+
+/* Selected pill — filled with the driver color via border, white bg */
+.driver-checklist label:has(input:checked) {
+  background-color: #2C1810 !important;
+  color: #F5EDE4 !important;
+  border-color: #2C1810 !important;
+  font-weight: 700 !important;
+}
+
+/* Button hover states */
+button:hover {
+  opacity: 0.8;
+}
+
+/* Plotly modebar */
+.modebar {
+  background-color: transparent !important;
+}
+
+.modebar-btn path {
+  fill: #8A7060 !important;
+}
+
+.modebar-btn:hover path {
+  fill: #C96A2A !important;
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5EDE4;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #C8B8A8;
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #A89888;
+}
+
+/* Graph container */
+.dash-graph {
+  border-radius: 8px;
+  overflow: hidden;
+}
