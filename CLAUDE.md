@@ -54,6 +54,8 @@ Colors are team-based, keyed by 3-letter abbreviation. See `utils/colors.py`. Th
 - Server: `root@5.78.109.38`, app lives at `/opt/f1-analytics`
 - Service port: 8003
 - Caddy handles TLS and reverse proxy for `f1.norangio.dev`
+- GitHub Actions auto-deploy: `.github/workflows/deploy.yml` on push to `main`
+- Required GitHub secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`
 
 ## Supported Years
 `SUPPORTED_YEARS = list(range(2021, 2027))` — update upper bound each new season.
