@@ -17,7 +17,7 @@ layout.py                 # Top-level HTML layout
 callbacks/
   session_callbacks.py    # Populates year/race/session/lap controls + driver checklist
   chart_callbacks.py      # Renders telemetry charts (lap mode + qualifying phase)
-  sidebar_callbacks.py    # Renders lap time + sector sidebar table
+  sidebar_callbacks.py    # Renders lap time + sector sidebar table (phase-aware for qualifying)
 components/
   session_selector.py     # Dropdown controls (year, race, session, qualifying phase, lap mode)
   driver_selector.py      # Driver pill checklist
@@ -57,7 +57,10 @@ When two selected drivers share the same team, one trace is rendered dotted so s
 
 ### Qualifying Views
 When session type is `Q`, the UI exposes a qualifying phase dropdown (`All`, `Q1`, `Q2`, `Q3`).
-Telemetry and lap-number options are filtered to the selected phase.
+Telemetry, lap-number options, and the right-hand lap-time sidebar are filtered to the selected phase.
+
+### Driver Pills
+Selected driver pills are rendered as a darker fill with white text, without an extra outer box.
 
 ## Deployment
 ```bash

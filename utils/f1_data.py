@@ -128,7 +128,10 @@ def get_qualifying_phase_lap_numbers(session: fastf1.core.Session) -> dict[str, 
     return phase_laps
 
 
-def get_lap_times_table(session: fastf1.core.Session) -> pd.DataFrame:
+def get_lap_times_table(
+    session: fastf1.core.Session,
+    qualifying_phase: str = "all",
+) -> pd.DataFrame:
     """
     Return a DataFrame of fastest lap times + sector times per driver,
     sorted fastest to slowest.
@@ -136,6 +139,7 @@ def get_lap_times_table(session: fastf1.core.Session) -> pd.DataFrame:
     rows = []
     for driver in get_drivers_in_session(session):
         driver_laps = session.laps.pick_driver(driver)
+        driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
         if driver_laps.empty:
             continue
         try:

@@ -11,9 +11,10 @@ from components.lap_sidebar import lap_sidebar_table, lap_sidebar_empty
 @app.callback(
     Output("lap-times-sidebar", "children"),
     Input("session-store", "data"),
+    Input("qualifying-phase-dropdown", "value"),
     State("driver-colors-store", "data"),
 )
-def update_lap_sidebar(session_data, driver_colors):
+def update_lap_sidebar(session_data, qualifying_phase, driver_colors):
     if session_data is None:
         return lap_sidebar_empty()
 
@@ -24,7 +25,8 @@ def update_lap_sidebar(session_data, driver_colors):
 
     try:
         session = f1_data.load_session(year, round_number, session_key)
-        df = f1_data.get_lap_times_table(session)
+        effective_phase = qualifying_phase if session_key == "Q" else "all"
+        df = f1_data.get_lap_times_table(session, qualifying_phase=effective_phase or "all")
         driver_numbers = session_data.get("driver_numbers", {})
         return lap_sidebar_table(df, colors, driver_numbers)
     except Exception as e:
