@@ -88,6 +88,23 @@ def get_driver_numbers(session: fastf1.core.Session) -> dict[str, str]:
     return {}
 
 
+def get_available_lap_numbers(session: fastf1.core.Session) -> list[int]:
+    """Return sorted lap numbers in this session that have valid lap times."""
+    try:
+        laps = session.laps
+        if laps is None or laps.empty:
+            return []
+
+        valid_laps = laps[laps["LapTime"].notna()]
+        lap_numbers = valid_laps["LapNumber"].dropna().astype(int)
+        if lap_numbers.empty:
+            return []
+
+        return sorted(lap_numbers.unique().tolist())
+    except Exception:
+        return []
+
+
 def get_lap_times_table(session: fastf1.core.Session) -> pd.DataFrame:
     """
     Return a DataFrame of fastest lap times + sector times per driver,

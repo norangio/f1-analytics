@@ -11,6 +11,8 @@ TEAM_COLORS = {
     "Williams":       "#1A7AB0",  # deep royal blue
     "Racing Bulls":   "#5A38A8",  # deep indigo/purple
     "Kick Sauber":    "#2D8A30",  # deep green
+    "Audi":           "#6E6E6E",  # medium-dark grey
+    "Cadillac":       "#000000",  # black
     "Haas":           "#B03030",  # deep muted red
 }
 
@@ -32,12 +34,16 @@ DRIVER_TEAM = {
     "ALB": "Williams",   "SAI": "Williams",
     # Racing Bulls
     "TSU": "Racing Bulls", "HAD": "Racing Bulls", "RIC": "Racing Bulls",
-    # Kick Sauber / Audi
-    "HUL": "Kick Sauber", "BOR": "Kick Sauber",  "ZHO": "Kick Sauber",
+    # Audi
+    "HUL": "Audi", "BOR": "Audi",
+    # Kick Sauber (legacy)
+    "ZHO": "Kick Sauber",
+    # Cadillac
+    "BOT": "Cadillac", "PER": "Cadillac",
     # Haas
     "OCO": "Haas",       "BEA": "Haas",     "MAG": "Haas",
     # Legacy (pre-2025)
-    "PER": "Red Bull",   "SAR": "Williams", "BOT": "Kick Sauber",
+    "SAR": "Williams",
 }
 
 # Fallback palette for unrecognised drivers
@@ -54,5 +60,21 @@ def get_driver_color(abbreviation: str) -> str:
     return _FALLBACK[hash(abbreviation) % len(_FALLBACK)]
 
 
+def get_driver_team(abbreviation: str) -> str | None:
+    return DRIVER_TEAM.get(abbreviation)
+
+
 def assign_driver_colors(driver_list: list[str]) -> dict[str, str]:
     return {driver: get_driver_color(driver) for driver in driver_list}
+
+
+def assign_driver_line_styles(driver_list: list[str]) -> dict[str, str]:
+    """Assign dashed style to teammates so same-color traces stay distinct."""
+    seen_by_team = {}
+    styles = {}
+    for driver in driver_list:
+        team = get_driver_team(driver) or driver
+        count = seen_by_team.get(team, 0)
+        styles[driver] = "solid" if count == 0 else "dot"
+        seen_by_team[team] = count + 1
+    return styles

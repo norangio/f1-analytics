@@ -16,6 +16,7 @@ def build_telemetry_figure(
     telemetry_data: dict[str, pd.DataFrame],
     driver_colors: dict[str, str],
     sector_distances: tuple[float | None, float | None] = (None, None),
+    driver_line_styles: dict[str, str] | None = None,
 ) -> go.Figure:
     """
     Build stacked Speed / Throttle / Brake subplots sharing x-axis (Distance).
@@ -31,6 +32,7 @@ def build_telemetry_figure(
 
     for driver, tel in telemetry_data.items():
         color = driver_colors.get(driver, "#FFFFFF")
+        line_style = (driver_line_styles or {}).get(driver, "solid")
 
         # Speed
         fig.add_trace(
@@ -39,7 +41,7 @@ def build_telemetry_figure(
                 y=tel["Speed"],
                 mode="lines",
                 name=driver,
-                line={"color": color, "width": 1.5},
+                line={"color": color, "width": 1.5, "dash": line_style},
                 legendgroup=driver,
                 hovertemplate=f"<b>{driver}</b><br>%{{x:.0f}} m<br>%{{y:.0f}} km/h<extra></extra>",
             ),
@@ -54,7 +56,7 @@ def build_telemetry_figure(
                 y=tel["Throttle"],
                 mode="lines",
                 name=driver,
-                line={"color": color, "width": 1.5},
+                line={"color": color, "width": 1.5, "dash": line_style},
                 legendgroup=driver,
                 showlegend=False,
                 hovertemplate=f"<b>{driver}</b><br>%{{x:.0f}} m<br>%{{y:.0f}}%<extra></extra>",
@@ -72,7 +74,7 @@ def build_telemetry_figure(
                 mode="lines",
                 fill="tozeroy",
                 name=driver,
-                line={"color": color, "width": 0.8},
+                line={"color": color, "width": 0.8, "dash": line_style},
                 fillcolor=color.replace(")", ", 0.25)").replace("rgb", "rgba") if color.startswith("rgb") else _hex_to_rgba(color, 0.2),
                 legendgroup=driver,
                 showlegend=False,

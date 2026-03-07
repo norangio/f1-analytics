@@ -15,8 +15,8 @@ app.py                    # Entry point — imports from dash_app.py, mounts lay
 dash_app.py               # Dash instance (singleton to avoid circular imports)
 layout.py                 # Top-level HTML layout
 callbacks/
-  session_callbacks.py    # Populates year/race/session dropdowns, driver checklist
-  chart_callbacks.py      # Renders telemetry charts (speed/throttle/brake)
+  session_callbacks.py    # Populates year/race/session/lap controls + driver checklist
+  chart_callbacks.py      # Renders telemetry charts (fastest lap or selected session lap)
   sidebar_callbacks.py    # Renders lap time + sector sidebar table
 components/
   session_selector.py     # Dropdown controls (year, race, session, lap mode)
@@ -46,6 +46,12 @@ The Dash app instance lives in `dash_app.py` only. `app.py` imports from it, and
 
 ### Driver Colors
 Colors are team-based, keyed by 3-letter abbreviation. See `utils/colors.py`. The `DRIVER_TEAM` dict covers 2025 + 2026 grid plus legacy drivers.
+
+Current custom mappings include:
+- `BOT`/`PER` → Cadillac (`#000000`)
+- `BOR`/`HUL` → Audi (`#6E6E6E`)
+
+When two selected drivers share the same team, one trace is rendered dotted so same-color teammates remain distinguishable.
 
 ## Deployment
 ```bash

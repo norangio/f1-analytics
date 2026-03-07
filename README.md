@@ -7,10 +7,11 @@ Live at [f1.norangio.dev](https://f1.norangio.dev)
 ## Features
 
 - **Session browser** — any race, qualifying, or practice session from 2021–2026
+- **Lap selection** — compare either each driver's fastest lap (default) or a specific lap number from the selected session
 - **Telemetry charts** — speed, throttle, and brake traces per driver, synchronized on lap distance
 - **Sector markers** — vertical bands showing S1/S2/S3 boundaries
 - **Lap time sidebar** — fastest lap + sector times per driver, sorted fastest to slowest
-- **Team colors** — driver pills and traces colored by team
+- **Team colors + teammate styling** — traces are team-colored, and when both teammates are selected one trace renders dotted for clarity
 
 ## Stack
 

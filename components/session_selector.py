@@ -85,6 +85,41 @@ def session_selector() -> html.Div:
                     ),
                 ],
             ),
+            # Lap mode
+            html.Div(
+                style={**CONTROL_STYLE, "minWidth": "150px"},
+                children=[
+                    html.Label("Lap", style=LABEL_STYLE),
+                    dcc.Dropdown(
+                        id="lap-mode-dropdown",
+                        options=[
+                            {"label": "Fastest Lap", "value": "fastest"},
+                            {"label": "Session Lap", "value": "specific"},
+                        ],
+                        value="fastest",
+                        clearable=False,
+                        style=DROPDOWN_STYLE,
+                        className="f1-dropdown",
+                    ),
+                ],
+            ),
+            # Specific lap selector (shown only in session-lap mode)
+            html.Div(
+                id="lap-number-control",
+                style={**CONTROL_STYLE, "minWidth": "130px", "display": "none"},
+                children=[
+                    html.Label("Lap #", style=LABEL_STYLE),
+                    dcc.Dropdown(
+                        id="lap-number-dropdown",
+                        options=[],
+                        placeholder="Select lap...",
+                        clearable=False,
+                        disabled=True,
+                        style=DROPDOWN_STYLE,
+                        className="f1-dropdown",
+                    ),
+                ],
+            ),
             # Load button
             html.Div(
                 style={**CONTROL_STYLE, "justifyContent": "flex-end"},

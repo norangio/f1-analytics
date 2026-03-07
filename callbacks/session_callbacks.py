@@ -8,6 +8,13 @@ from dash_app import app
 from utils import f1_data
 from utils.colors import assign_driver_colors
 
+LAP_NUMBER_CONTROL_STYLE = {
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": "4px",
+    "minWidth": "130px",
+}
+
 
 @app.callback(
     Output("race-dropdown", "options"),
@@ -48,6 +55,7 @@ def load_session(n_clicks, year, round_number, session_key):
         status = f"Loaded — {len(drivers)} drivers"
 
         driver_numbers = f1_data.get_driver_numbers(session)
+        available_laps = f1_data.get_available_lap_numbers(session)
 
         store_data = {
             "year": year,
@@ -55,10 +63,33 @@ def load_session(n_clicks, year, round_number, session_key):
             "session_key": session_key,
             "drivers": drivers,
             "driver_numbers": driver_numbers,
+            "available_laps": available_laps,
         }
         return store_data, status, title, colors
     except Exception as e:
         return dash.no_update, f"Error: {str(e)[:60]}", dash.no_update, dash.no_update
+
+
+@app.callback(
+    Output("lap-number-dropdown", "options"),
+    Output("lap-number-dropdown", "value"),
+    Output("lap-number-dropdown", "disabled"),
+    Output("lap-number-control", "style"),
+    Input("lap-mode-dropdown", "value"),
+    Input("session-store", "data"),
+)
+def update_lap_number_options(lap_mode, session_data):
+    if lap_mode != "specific":
+        return [], None, True, {**LAP_NUMBER_CONTROL_STYLE, "display": "none"}
+
+    if session_data is None:
+        return [], None, True, LAP_NUMBER_CONTROL_STYLE
+
+    available_laps = session_data.get("available_laps", [])
+    options = [{"label": str(lap), "value": lap} for lap in available_laps]
+    default_value = options[0]["value"] if options else None
+    disabled = not bool(options)
+    return options, default_value, disabled, LAP_NUMBER_CONTROL_STYLE
 
 
 @app.callback(
