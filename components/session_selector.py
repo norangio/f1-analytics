@@ -1,7 +1,7 @@
-"""Session selector controls: Year → Race → Session Type."""
+"""Session selector controls: Year → Race → Session/Lap options."""
 
 from dash import dcc, html
-from utils.f1_data import SUPPORTED_YEARS, SESSION_TYPES
+from utils.f1_data import SUPPORTED_YEARS, SESSION_TYPES, QUALIFYING_PHASES
 
 CONTROL_STYLE = {
     "display": "flex",
@@ -80,6 +80,23 @@ def session_selector() -> html.Div:
                         options=[{"label": v, "value": k} for k, v in SESSION_TYPES.items()],
                         value="Q",
                         clearable=False,
+                        style=DROPDOWN_STYLE,
+                        className="f1-dropdown",
+                    ),
+                ],
+            ),
+            # Qualifying phase selector (shown only for qualifying sessions)
+            html.Div(
+                id="qualifying-phase-control",
+                style={**CONTROL_STYLE, "minWidth": "120px", "display": "none"},
+                children=[
+                    html.Label("Quali", style=LABEL_STYLE),
+                    dcc.Dropdown(
+                        id="qualifying-phase-dropdown",
+                        options=[{"label": v, "value": k} for k, v in QUALIFYING_PHASES.items()],
+                        value="all",
+                        clearable=False,
+                        disabled=True,
                         style=DROPDOWN_STYLE,
                         className="f1-dropdown",
                     ),

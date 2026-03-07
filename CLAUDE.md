@@ -16,10 +16,10 @@ dash_app.py               # Dash instance (singleton to avoid circular imports)
 layout.py                 # Top-level HTML layout
 callbacks/
   session_callbacks.py    # Populates year/race/session/lap controls + driver checklist
-  chart_callbacks.py      # Renders telemetry charts (fastest lap or selected session lap)
+  chart_callbacks.py      # Renders telemetry charts (lap mode + qualifying phase)
   sidebar_callbacks.py    # Renders lap time + sector sidebar table
 components/
-  session_selector.py     # Dropdown controls (year, race, session, lap mode)
+  session_selector.py     # Dropdown controls (year, race, session, qualifying phase, lap mode)
   driver_selector.py      # Driver pill checklist
   telemetry_charts.py     # Plotly figure builders (3-subplot, shared x-axis)
   lap_sidebar.py          # Lap time table component
@@ -50,8 +50,14 @@ Colors are team-based, keyed by 3-letter abbreviation. See `utils/colors.py`. Th
 Current custom mappings include:
 - `BOT`/`PER` → Cadillac (`#000000`)
 - `BOR`/`HUL` → Audi (`#6E6E6E`)
+- `LAW`/`LIN` → Racing Bulls (with Lawson blue override)
+- Alpine (`GAS`/`COL`) uses a darker blue (`#2456B3`)
 
 When two selected drivers share the same team, one trace is rendered dotted so same-color teammates remain distinguishable.
+
+### Qualifying Views
+When session type is `Q`, the UI exposes a qualifying phase dropdown (`All`, `Q1`, `Q2`, `Q3`).
+Telemetry and lap-number options are filtered to the selected phase.
 
 ## Deployment
 ```bash

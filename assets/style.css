@@ -68,8 +68,19 @@ html, body {
 }
 
 /* Driver checklist pills */
+.driver-checklist input[type="checkbox"] {
+  display: none !important;
+}
+
 .driver-checklist label {
+  display: inline-flex !important;
+  align-items: center;
   transition: border-color 0.12s, background-color 0.12s, color 0.12s;
+}
+
+.driver-checklist label > span {
+  color: inherit !important;
+  background: transparent !important;
 }
 
 .driver-checklist label:hover {
@@ -77,12 +88,21 @@ html, body {
   border-color: #C96A2A !important;
 }
 
-/* Selected pill — filled with the driver color via border, white bg */
+/* Selected pill — black fill with white text */
 .driver-checklist label:has(input:checked) {
   background-color: #2C1810 !important;
   color: #F5EDE4 !important;
   border-color: #2C1810 !important;
   font-weight: 700 !important;
+}
+
+.driver-checklist label:has(input:checked) > span {
+  color: #F5EDE4 !important;
+  background: transparent !important;
+}
+
+.driver-checklist input[type="checkbox"]:checked + span {
+  color: #F5EDE4 !important;
 }
 
 /* Button hover states */

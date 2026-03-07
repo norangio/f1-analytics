@@ -14,6 +14,12 @@ LAP_NUMBER_CONTROL_STYLE = {
     "gap": "4px",
     "minWidth": "130px",
 }
+QUALIFYING_PHASE_CONTROL_STYLE = {
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": "4px",
+    "minWidth": "120px",
+}
 
 
 @app.callback(
@@ -56,6 +62,8 @@ def load_session(n_clicks, year, round_number, session_key):
 
         driver_numbers = f1_data.get_driver_numbers(session)
         available_laps = f1_data.get_available_lap_numbers(session)
+        qualifying_phase_laps = f1_data.get_qualifying_phase_lap_numbers(session) if session_key == "Q" else {}
+        available_qualifying_phases = [phase for phase in ("Q1", "Q2", "Q3") if qualifying_phase_laps.get(phase)]
 
         store_data = {
             "year": year,
@@ -64,10 +72,40 @@ def load_session(n_clicks, year, round_number, session_key):
             "drivers": drivers,
             "driver_numbers": driver_numbers,
             "available_laps": available_laps,
+            "qualifying_phase_laps": qualifying_phase_laps,
+            "available_qualifying_phases": available_qualifying_phases,
         }
         return store_data, status, title, colors
     except Exception as e:
         return dash.no_update, f"Error: {str(e)[:60]}", dash.no_update, dash.no_update
+
+
+@app.callback(
+    Output("qualifying-phase-dropdown", "options"),
+    Output("qualifying-phase-dropdown", "value"),
+    Output("qualifying-phase-dropdown", "disabled"),
+    Output("qualifying-phase-control", "style"),
+    Input("session-dropdown", "value"),
+    Input("session-store", "data"),
+    State("qualifying-phase-dropdown", "value"),
+)
+def update_qualifying_phase_options(selected_session_key, session_data, current_value):
+    default_options = [{"label": "All", "value": "all"}]
+
+    if selected_session_key != "Q":
+        return default_options, "all", True, {**QUALIFYING_PHASE_CONTROL_STYLE, "display": "none"}
+
+    if session_data is None or session_data.get("session_key") != "Q":
+        return default_options, "all", True, QUALIFYING_PHASE_CONTROL_STYLE
+
+    available_phases = session_data.get("available_qualifying_phases", [])
+    options = default_options + [{"label": phase, "value": phase} for phase in available_phases]
+    disabled = len(options) == 1
+    if current_value in {opt["value"] for opt in options}:
+        value = current_value
+    else:
+        value = "all"
+    return options, value, disabled, QUALIFYING_PHASE_CONTROL_STYLE
 
 
 @app.callback(
@@ -76,9 +114,10 @@ def load_session(n_clicks, year, round_number, session_key):
     Output("lap-number-dropdown", "disabled"),
     Output("lap-number-control", "style"),
     Input("lap-mode-dropdown", "value"),
+    Input("qualifying-phase-dropdown", "value"),
     Input("session-store", "data"),
 )
-def update_lap_number_options(lap_mode, session_data):
+def update_lap_number_options(lap_mode, qualifying_phase, session_data):
     if lap_mode != "specific":
         return [], None, True, {**LAP_NUMBER_CONTROL_STYLE, "display": "none"}
 
@@ -86,6 +125,10 @@ def update_lap_number_options(lap_mode, session_data):
         return [], None, True, LAP_NUMBER_CONTROL_STYLE
 
     available_laps = session_data.get("available_laps", [])
+    if session_data.get("session_key") == "Q" and qualifying_phase in ("Q1", "Q2", "Q3"):
+        phase_laps = session_data.get("qualifying_phase_laps", {})
+        available_laps = phase_laps.get(qualifying_phase, [])
+
     options = [{"label": str(lap), "value": lap} for lap in available_laps]
     default_value = options[0]["value"] if options else None
     disabled = not bool(options)
@@ -96,19 +139,16 @@ def update_lap_number_options(lap_mode, session_data):
     Output("driver-checklist", "options"),
     Output("driver-checklist", "value"),
     Input("session-store", "data"),
-    State("driver-colors-store", "data"),
 )
-def update_driver_checklist(session_data, driver_colors):
+def update_driver_checklist(session_data):
     if session_data is None:
         raise PreventUpdate
 
     drivers = session_data.get("drivers", [])
     driver_numbers = session_data.get("driver_numbers", {})
-    colors = driver_colors or {}
 
     options = []
     for driver in drivers:
-        color = colors.get(driver, "#5C4A3A")
         number = driver_numbers.get(driver, "")
         label = f"{number} {driver}" if number else driver
         options.append({

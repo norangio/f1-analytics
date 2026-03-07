@@ -17,6 +17,12 @@ SESSION_TYPES = {
     "S": "Sprint",
     "SQ": "Sprint Qualifying",
 }
+QUALIFYING_PHASES = {
+    "all": "All",
+    "Q1": "Q1",
+    "Q2": "Q2",
+    "Q3": "Q3",
+}
 
 
 def get_event_schedule(year: int) -> list[dict]:
@@ -105,6 +111,23 @@ def get_available_lap_numbers(session: fastf1.core.Session) -> list[int]:
         return []
 
 
+def get_qualifying_phase_lap_numbers(session: fastf1.core.Session) -> dict[str, list[int]]:
+    """Return lap numbers grouped by qualifying phase (Q1/Q2/Q3)."""
+    phase_laps = {}
+    for phase in ("Q1", "Q2", "Q3"):
+        laps = _get_qualifying_phase_laps(session, phase)
+        if laps is None or laps.empty:
+            phase_laps[phase] = []
+            continue
+
+        try:
+            numbers = laps["LapNumber"].dropna().astype(int).unique().tolist()
+            phase_laps[phase] = sorted(numbers)
+        except Exception:
+            phase_laps[phase] = []
+    return phase_laps
+
+
 def get_lap_times_table(session: fastf1.core.Session) -> pd.DataFrame:
     """
     Return a DataFrame of fastest lap times + sector times per driver,
@@ -145,6 +168,7 @@ def get_telemetry(
     drivers: list[str],
     lap_mode: str = "fastest",
     lap_number: int | None = None,
+    qualifying_phase: str = "all",
 ) -> dict[str, pd.DataFrame]:
     """
     Return telemetry DataFrames keyed by driver abbreviation.
@@ -154,6 +178,7 @@ def get_telemetry(
     result = {}
     for driver in drivers:
         driver_laps = session.laps.pick_driver(driver)
+        driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
         if driver_laps.empty:
             continue
         try:
@@ -173,13 +198,22 @@ def get_telemetry(
     return result
 
 
-def get_sector_distances(session: fastf1.core.Session, driver: str) -> tuple[float | None, float | None]:
+def get_sector_distances(
+    session: fastf1.core.Session,
+    driver: str,
+    qualifying_phase: str = "all",
+) -> tuple[float | None, float | None]:
     """
     Return approximate (sector1_end_distance, sector2_end_distance) in meters
     for the fastest lap of a driver.
     """
     try:
-        lap = session.laps.pick_driver(driver).pick_fastest()
+        driver_laps = session.laps.pick_driver(driver)
+        driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
+        if driver_laps.empty:
+            return None, None
+
+        lap = driver_laps.pick_fastest()
         tel = lap.get_telemetry().add_distance()
         total = float(tel["Distance"].max())
         # Estimate sector splits from timing if available
@@ -194,6 +228,45 @@ def get_sector_distances(session: fastf1.core.Session, driver: str) -> tuple[flo
         return total * s1_frac, total * s2_frac
     except Exception:
         return None, None
+
+
+def _get_qualifying_phase_laps(session: fastf1.core.Session, phase: str):
+    """Return laps object for a qualifying phase (Q1/Q2/Q3), or None."""
+    if phase not in ("Q1", "Q2", "Q3"):
+        return None
+
+    try:
+        split_method = getattr(session.laps, "split_qualifying_sessions", None)
+        if split_method is None:
+            return None
+        split_laps = split_method()
+        phase_index = {"Q1": 0, "Q2": 1, "Q3": 2}[phase]
+        if phase_index >= len(split_laps):
+            return None
+        return split_laps[phase_index]
+    except Exception:
+        return None
+
+
+def _filter_laps_by_qualifying_phase(
+    session: fastf1.core.Session,
+    laps,
+    qualifying_phase: str,
+):
+    """Filter laps to a qualifying phase; return original laps on fallback."""
+    if qualifying_phase not in ("Q1", "Q2", "Q3"):
+        return laps
+
+    phase_laps = _get_qualifying_phase_laps(session, qualifying_phase)
+    if phase_laps is None:
+        return laps
+    if phase_laps.empty:
+        return laps.iloc[0:0]
+
+    try:
+        return laps[laps.index.isin(phase_laps.index)]
+    except Exception:
+        return laps
 
 
 def _format_timedelta(td) -> str:

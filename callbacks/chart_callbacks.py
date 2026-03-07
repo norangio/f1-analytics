@@ -11,13 +11,14 @@ from components.telemetry_charts import build_telemetry_figure, empty_telemetry_
 @app.callback(
     Output("telemetry-graph", "figure"),
     Input("driver-checklist", "value"),
+    Input("qualifying-phase-dropdown", "value"),
     Input("lap-mode-dropdown", "value"),
     Input("lap-number-dropdown", "value"),
     State("session-store", "data"),
     State("driver-colors-store", "data"),
     prevent_initial_call=True,
 )
-def update_telemetry_chart(selected_drivers, lap_mode, lap_number, session_data, driver_colors):
+def update_telemetry_chart(selected_drivers, qualifying_phase, lap_mode, lap_number, session_data, driver_colors):
     if not selected_drivers or session_data is None:
         return empty_telemetry_figure()
     if lap_mode == "specific" and lap_number is None:
@@ -37,6 +38,7 @@ def update_telemetry_chart(selected_drivers, lap_mode, lap_number, session_data,
             selected_drivers,
             lap_mode=lap_mode,
             lap_number=effective_lap_number,
+            qualifying_phase=qualifying_phase or "all",
         )
 
         if not telemetry_data:
@@ -46,7 +48,11 @@ def update_telemetry_chart(selected_drivers, lap_mode, lap_number, session_data,
 
         # Get sector distances using first available driver
         first_driver = next(iter(telemetry_data))
-        sector_distances = f1_data.get_sector_distances(session, first_driver)
+        sector_distances = f1_data.get_sector_distances(
+            session,
+            first_driver,
+            qualifying_phase=qualifying_phase or "all",
+        )
 
         return build_telemetry_figure(telemetry_data, colors, sector_distances, line_styles)
 

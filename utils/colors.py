@@ -7,7 +7,7 @@ TEAM_COLORS = {
     "Mercedes":       "#0F9B8E",  # deep teal
     "McLaren":        "#D4650A",  # deep papaya orange
     "Aston Martin":   "#1A7A48",  # deep British racing green
-    "Alpine":         "#3B68C8",  # deep blue
+    "Alpine":         "#2456B3",  # darker alpine blue
     "Williams":       "#1A7AB0",  # deep royal blue
     "Racing Bulls":   "#5A38A8",  # deep indigo/purple
     "Kick Sauber":    "#2D8A30",  # deep green
@@ -19,7 +19,7 @@ TEAM_COLORS = {
 # Driver abbreviation → team (covers 2025 + 2026 grid)
 DRIVER_TEAM = {
     # Red Bull
-    "VER": "Red Bull",   "LAW": "Red Bull",
+    "VER": "Red Bull",
     # McLaren
     "NOR": "McLaren",    "PIA": "McLaren",
     # Ferrari
@@ -34,6 +34,7 @@ DRIVER_TEAM = {
     "ALB": "Williams",   "SAI": "Williams",
     # Racing Bulls
     "TSU": "Racing Bulls", "HAD": "Racing Bulls", "RIC": "Racing Bulls",
+    "LAW": "Racing Bulls", "LIN": "Racing Bulls",
     # Audi
     "HUL": "Audi", "BOR": "Audi",
     # Kick Sauber (legacy)
@@ -52,8 +53,16 @@ _FALLBACK = [
     "#B06820", "#207898", "#A03878", "#608830",
 ]
 
+# Driver-specific overrides when a driver color differs from team default.
+DRIVER_COLOR_OVERRIDES = {
+    "LAW": "#3B6BB5",
+    "LIN": "#3B6BB5",
+}
+
 
 def get_driver_color(abbreviation: str) -> str:
+    if abbreviation in DRIVER_COLOR_OVERRIDES:
+        return DRIVER_COLOR_OVERRIDES[abbreviation]
     team = DRIVER_TEAM.get(abbreviation)
     if team:
         return TEAM_COLORS.get(team, _FALLBACK[0])
