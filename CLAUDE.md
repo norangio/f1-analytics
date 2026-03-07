@@ -7,7 +7,7 @@ A Plotly Dash app serving real F1 telemetry data via the FastF1 Python SDK. Depl
 - **Framework**: Plotly Dash (gunicorn, port 8003)
 - **Data**: FastF1 (disk-cached in `data/cache/`, gitignored)
 - **Styling**: Light tan/parchment theme (`#F5EDE4` background, `#C96A2A` orange accent)
-- **Deployment**: rsync → systemd via `./deploy.sh`
+- **Deployment**: GitHub pull on VPS via `./deploy.sh` + `deploy/server-deploy.sh`
 
 ## Project Structure
 ```
@@ -30,6 +30,7 @@ assets/style.css          # Global CSS overrides (Dash dropdowns, pills, scrollb
 deploy/
   f1-analytics.service    # systemd unit
   Caddyfile.snippet        # Caddy reverse proxy block
+  server-deploy.sh         # Runs on VPS: git pull + pip install + restart
 deploy.sh                 # One-command deploy script
 ```
 
@@ -48,7 +49,7 @@ Colors are team-based, keyed by 3-letter abbreviation. See `utils/colors.py`. Th
 
 ## Deployment
 ```bash
-./deploy.sh   # rsync + pip install + systemctl restart f1-analytics
+./deploy.sh   # push branch → SSH to VPS → git pull + pip install + restart
 ```
 - Server: `root@5.78.109.38`, app lives at `/opt/f1-analytics`
 - Service port: 8003

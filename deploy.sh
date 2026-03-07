@@ -1,30 +1,23 @@
-#!/bin/bash
-# Deploy f1-analytics to production.
-# Usage: ./deploy.sh
-set -e
+#!/usr/bin/env bash
+# Deploy f1-analytics to production using GitHub as the source of truth.
+# Usage: ./deploy.sh [branch]
+set -euo pipefail
 
-SERVER="root@5.78.109.38"
-REMOTE="/opt/f1-analytics"
+SERVER="${SERVER:-root@5.78.109.38}"
+REMOTE="${REMOTE:-/opt/f1-analytics}"
+BRANCH="${1:-$(git rev-parse --abbrev-ref HEAD)}"
 
-echo "→ Syncing files..."
-rsync -az --delete \
-  --exclude='venv' \
-  --exclude='__pycache__' \
-  --exclude='*.pyc' \
-  --exclude='data/cache/' \
-  --exclude='.git' \
-  . $SERVER:$REMOTE/
+if [[ ! "$BRANCH" =~ ^[A-Za-z0-9._/-]+$ ]]; then
+  echo "Invalid branch name: $BRANCH" >&2
+  exit 1
+fi
 
-echo "→ Installing dependencies..."
-ssh $SERVER "cd $REMOTE && python3 -m venv venv && venv/bin/pip install -q -r requirements.txt"
+if [[ "${SKIP_PUSH:-0}" != "1" ]]; then
+  echo "→ Pushing $BRANCH to GitHub..."
+  git push origin "$BRANCH"
+fi
 
-echo "→ Setting up cache directory..."
-ssh $SERVER "mkdir -p $REMOTE/data/cache && chown -R www-data:www-data $REMOTE/data"
-
-echo "→ Installing systemd service (first deploy only)..."
-ssh $SERVER "cp $REMOTE/deploy/f1-analytics.service /etc/systemd/system/ && systemctl daemon-reload && systemctl enable f1-analytics" 2>/dev/null || true
-
-echo "→ Restarting service..."
-ssh $SERVER "systemctl restart f1-analytics"
+echo "→ Pulling latest code on VPS and deploying..."
+ssh "$SERVER" "bash $REMOTE/deploy/server-deploy.sh $BRANCH"
 
 echo "✓ Deployed to https://f1.norangio.dev"
