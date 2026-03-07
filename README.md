@@ -57,6 +57,7 @@ The server script does:
 ### GitHub Actions Auto Deploy
 
 `.github/workflows/deploy.yml` deploys automatically on pushes to `main` (and supports manual runs).
+It bootstraps/syncs `/opt/f1-analytics` from GitHub before running the server deploy script.
 
 Required repository secrets:
 - `VPS_HOST` (example: `5.78.109.38`)
