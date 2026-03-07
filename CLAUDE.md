@@ -61,6 +61,7 @@ Telemetry, lap-number options, and the right-hand lap-time sidebar are filtered 
 
 ### Driver Pills
 Selected driver pills are rendered as a darker fill with white text, without an extra outer box.
+`Select All` and `Clear` buttons are stateful and highlight when all or none are selected.
 
 ## Deployment
 ```bash

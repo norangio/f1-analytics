@@ -14,6 +14,7 @@ Live at [f1.norangio.dev](https://f1.norangio.dev)
 - **Lap time sidebar** — fastest lap + sector times per driver, sorted fastest to slowest and filtered by qualifying phase when applicable
 - **Team colors + teammate styling** — traces are team-colored, and when both teammates are selected one trace renders dotted for clarity
 - **Driver pill styling** — selected drivers use a darker filled pill with white text and no extra outer box
+- **Driver action states** — `Select All` and `Clear` buttons visibly show active state based on current selection
 
 ## Stack
 

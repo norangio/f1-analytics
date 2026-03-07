@@ -20,6 +20,22 @@ QUALIFYING_PHASE_CONTROL_STYLE = {
     "gap": "4px",
     "minWidth": "120px",
 }
+DRIVER_ACTION_BUTTON_BASE_STYLE = {
+    "background": "none",
+    "border": "1px solid #C8B8A8",
+    "borderRadius": "4px",
+    "color": "#8A7060",
+    "fontSize": "11px",
+    "padding": "4px 10px",
+    "cursor": "pointer",
+}
+DRIVER_ACTION_BUTTON_ACTIVE_STYLE = {
+    **DRIVER_ACTION_BUTTON_BASE_STYLE,
+    "backgroundColor": "#2C1810",
+    "border": "1px solid #2C1810",
+    "color": "#F5EDE4",
+    "fontWeight": "700",
+}
 
 
 @app.callback(
@@ -175,3 +191,23 @@ def handle_select_all_clear(select_all, clear, options):
     if triggered == "clear-drivers-btn":
         return []
     raise PreventUpdate
+
+
+@app.callback(
+    Output("select-all-drivers-btn", "style"),
+    Output("clear-drivers-btn", "style"),
+    Input("driver-checklist", "value"),
+    State("driver-checklist", "options"),
+)
+def update_driver_action_button_styles(selected_values, options):
+    if not options:
+        return DRIVER_ACTION_BUTTON_BASE_STYLE, DRIVER_ACTION_BUTTON_BASE_STYLE
+
+    selected = set(selected_values or [])
+    all_values = {option["value"] for option in options}
+    all_selected = bool(all_values) and selected == all_values
+    none_selected = not selected
+
+    select_style = DRIVER_ACTION_BUTTON_ACTIVE_STYLE if all_selected else DRIVER_ACTION_BUTTON_BASE_STYLE
+    clear_style = DRIVER_ACTION_BUTTON_ACTIVE_STYLE if none_selected else DRIVER_ACTION_BUTTON_BASE_STYLE
+    return select_style, clear_style

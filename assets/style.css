@@ -69,21 +69,15 @@ html, body {
 
 /* Driver checklist pills */
 .driver-checklist input[type="checkbox"] {
-  display: none !important;
+  position: absolute !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  pointer-events: none !important;
 }
 
 .driver-checklist label {
-  padding: 0 !important;
-  border: 0 !important;
-  background: transparent !important;
-  display: inline-flex !important;
-  align-items: center;
-  cursor: pointer;
-}
-
-.driver-checklist label > span {
-  display: inline-flex !important;
-  align-items: center;
   padding: 4px 11px !important;
   border-radius: 20px !important;
   border: 1.5px solid #C8B8A8 !important;
@@ -92,16 +86,37 @@ html, body {
   font-size: 11px !important;
   font-weight: 600 !important;
   letter-spacing: 0.04em;
+  display: inline-flex !important;
+  align-items: center;
+  gap: 0;
+  cursor: pointer;
+  user-select: none;
   transition: border-color 0.12s, background-color 0.12s, color 0.12s;
 }
 
-.driver-checklist label:hover > span {
+.driver-checklist label > span {
+  color: inherit !important;
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.driver-checklist label > span:empty {
+  display: none !important;
+}
+
+.driver-checklist label > span:first-of-type:not(:last-of-type) {
+  display: none !important;
+}
+
+.driver-checklist label:hover {
   background-color: #E0D4C8 !important;
   border-color: #C96A2A !important;
 }
 
 /* Selected pill — darken entire pill with no outer box */
-.driver-checklist input[type="checkbox"]:checked + span {
+.driver-checklist label:has(input:checked) {
   background-color: #2C1810 !important;
   color: #F5EDE4 !important;
   border-color: #2C1810 !important;
