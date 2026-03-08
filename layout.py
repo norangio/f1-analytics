@@ -8,17 +8,17 @@ from components.driver_selector import driver_selector
 def build_layout() -> html.Div:
     return html.Div(
         style={
-            "backgroundColor": "#F5EDE4",
+            "backgroundColor": "#F3F4F6",
             "minHeight": "100vh",
             "fontFamily": "Inter, system-ui, -apple-system, sans-serif",
-            "color": "#2C1810",
+            "color": "#111827",
         },
         children=[
             # Header
             html.Div(
                 style={
-                    "backgroundColor": "#EDE3D8",
-                    "borderBottom": "1px solid #D4C2B0",
+                    "backgroundColor": "#FFFFFF",
+                    "borderBottom": "1px solid #E5E7EB",
                     "padding": "0 24px",
                     "display": "flex",
                     "alignItems": "center",
@@ -29,7 +29,7 @@ def build_layout() -> html.Div:
                     html.Span(
                         "F1",
                         style={
-                            "color": "#C96A2A",
+                            "color": "#DC2626",
                             "fontWeight": "900",
                             "fontSize": "18px",
                             "letterSpacing": "-0.02em",
@@ -38,8 +38,8 @@ def build_layout() -> html.Div:
                     html.Span(
                         "Analytics",
                         style={
-                            "color": "#5C4030",
-                            "fontWeight": "300",
+                            "color": "#111827",
+                            "fontWeight": "400",
                             "fontSize": "18px",
                             "letterSpacing": "0.02em",
                         },
@@ -47,7 +47,7 @@ def build_layout() -> html.Div:
                     html.Div(style={"flex": "1"}),
                     html.Span(
                         id="session-title",
-                        style={"color": "#8A7060", "fontSize": "13px"},
+                        style={"color": "#6B7280", "fontSize": "13px"},
                     ),
                 ],
             ),
@@ -86,8 +86,8 @@ def build_layout() -> html.Div:
                         style={
                             "width": "280px",
                             "flexShrink": "0",
-                            "borderLeft": "1px solid #D4C2B0",
-                            "backgroundColor": "#EDE3D8",
+                            "borderLeft": "1px solid #E5E7EB",
+                            "backgroundColor": "#FFFFFF",
                             "padding": "16px 12px",
                         },
                         children=[
@@ -98,7 +98,7 @@ def build_layout() -> html.Div:
                                     "fontWeight": "600",
                                     "letterSpacing": "0.08em",
                                     "textTransform": "uppercase",
-                                    "color": "#8A7060",
+                                    "color": "#6B7280",
                                     "marginBottom": "12px",
                                     "paddingLeft": "4px",
                                 },

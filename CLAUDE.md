@@ -6,7 +6,7 @@ A Plotly Dash app serving real F1 telemetry data via the FastF1 Python SDK. Depl
 ## Stack
 - **Framework**: Plotly Dash (gunicorn, port 8003)
 - **Data**: FastF1 (disk-cached in `data/cache/`, gitignored)
-- **Styling**: Light tan/parchment theme (`#F5EDE4` background, `#C96A2A` orange accent)
+- **Styling**: Neutral light theme (white/gray surfaces with muted slate text)
 - **Deployment**: GitHub pull on VPS via `./deploy.sh` + `deploy/server-deploy.sh`
 
 ## Project Structure

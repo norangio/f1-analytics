@@ -10,6 +10,7 @@ Live at [f1.norangio.dev](https://f1.norangio.dev)
 - **Qualifying phase filter** — for qualifying sessions, compare All laps or only Q1/Q2/Q3
 - **Lap selection** — compare either each driver's fastest lap (default) or a specific lap number from the selected session
 - **Telemetry charts** — speed, throttle, and brake traces per driver, synchronized on lap distance
+- **Neutral light UI** — white/gray app surfaces with high-contrast text for day-to-day readability
 - **Sector markers** — vertical bands showing S1/S2/S3 boundaries
 - **Lap time sidebar** — fastest lap + sector times per driver, sorted fastest to slowest and filtered by qualifying phase when applicable
 - **Team colors + teammate styling** — traces are team-colored, and when both teammates are selected one trace renders dotted for clarity

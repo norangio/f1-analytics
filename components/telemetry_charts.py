@@ -4,12 +4,12 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-BG_COLOR = "#F5EDE4"
-PAPER_COLOR = "#F5EDE4"
-GRID_COLOR = "rgba(0, 0, 0, 0.06)"
-AXIS_COLOR = "#C8B8A8"
-TEXT_COLOR = "#8A7060"
-SECTOR_LINE_COLOR = "rgba(90, 60, 40, 0.18)"
+BG_COLOR = "#FFFFFF"
+PAPER_COLOR = "#F8FAFC"
+GRID_COLOR = "rgba(148, 163, 184, 0.22)"
+AXIS_COLOR = "#D1D5DB"
+TEXT_COLOR = "#4B5563"
+SECTOR_LINE_COLOR = "rgba(107, 114, 128, 0.22)"
 
 
 def build_telemetry_figure(
@@ -120,9 +120,9 @@ def _apply_chart_theme(fig: go.Figure) -> None:
         margin={"l": 55, "r": 20, "t": 32, "b": 40},
         hovermode="x unified",
         hoverlabel={
-            "bgcolor": "#EDE3D8",
-            "bordercolor": "#C8B8A8",
-            "font": {"color": "#2C1810", "size": 12},
+            "bgcolor": "#FFFFFF",
+            "bordercolor": "#D1D5DB",
+            "font": {"color": "#111827", "size": 12},
         },
         legend={
             "orientation": "h",
@@ -130,7 +130,7 @@ def _apply_chart_theme(fig: go.Figure) -> None:
             "y": 1.02,
             "xanchor": "left",
             "x": 0,
-            "font": {"size": 12, "color": "#5C4030"},
+            "font": {"size": 12, "color": "#374151"},
             "bgcolor": "rgba(0,0,0,0)",
         },
         height=520,
@@ -173,7 +173,7 @@ def empty_telemetry_figure(message: str = "Select a session and drivers to view 
                 "x": 0.5,
                 "y": 0.5,
                 "showarrow": False,
-                "font": {"color": "#8A7060", "size": 14},
+                "font": {"color": "#6B7280", "size": 14},
             }
         ],
         xaxis={"visible": False},

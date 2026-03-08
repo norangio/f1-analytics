@@ -1,4 +1,4 @@
-/* F1 Analytics — Claude light tan theme */
+/* F1 Analytics — neutral light theme */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
 
@@ -9,61 +9,61 @@
 html, body {
   margin: 0;
   padding: 0;
-  background-color: #F5EDE4;
-  color: #2C1810;
+  background-color: #F3F4F6;
+  color: #111827;
   font-family: Inter, system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
 /* Dash dropdown overrides */
 .f1-dropdown .Select-control {
-  background-color: #EDE3D8 !important;
-  border-color: #C8B8A8 !important;
+  background-color: #FFFFFF !important;
+  border-color: #D1D5DB !important;
   border-radius: 6px !important;
-  color: #2C1810 !important;
+  color: #111827 !important;
   min-height: 36px !important;
   box-shadow: none !important;
 }
 
 .f1-dropdown .Select-value-label,
 .f1-dropdown .Select-placeholder {
-  color: #5C4030 !important;
+  color: #374151 !important;
   font-size: 13px !important;
 }
 
 .f1-dropdown .Select-arrow {
-  border-top-color: #8A7060 !important;
+  border-top-color: #6B7280 !important;
 }
 
 .f1-dropdown.is-focused .Select-control,
 .f1-dropdown .Select-control:hover {
-  border-color: #C96A2A !important;
+  border-color: #6B7280 !important;
   box-shadow: none !important;
 }
 
 .f1-dropdown .Select-menu-outer {
-  background-color: #EDE3D8 !important;
-  border-color: #C8B8A8 !important;
+  background-color: #FFFFFF !important;
+  border-color: #D1D5DB !important;
   border-radius: 6px !important;
-  box-shadow: 0 8px 24px rgba(80, 40, 10, 0.12) !important;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
   z-index: 100 !important;
 }
 
 .f1-dropdown .Select-option {
-  background-color: #EDE3D8 !important;
-  color: #5C4030 !important;
+  background-color: #FFFFFF !important;
+  color: #374151 !important;
   font-size: 13px !important;
   padding: 8px 12px !important;
 }
 
 .f1-dropdown .Select-option.is-focused {
-  background-color: #E0D4C8 !important;
-  color: #2C1810 !important;
+  background-color: #F3F4F6 !important;
+  color: #111827 !important;
 }
 
 .f1-dropdown .Select-option.is-selected {
-  background-color: rgba(201, 106, 42, 0.12) !important;
-  color: #C96A2A !important;
+  background-color: #E5E7EB !important;
+  color: #111827 !important;
   font-weight: 600 !important;
 }
 
@@ -80,9 +80,9 @@ html, body {
 .driver-checklist label {
   padding: 4px 11px !important;
   border-radius: 20px !important;
-  border: 1.5px solid #C8B8A8 !important;
-  background-color: #F5EDE4 !important;
-  color: #5C4030 !important;
+  border: 1.5px solid #D1D5DB !important;
+  background-color: #F9FAFB !important;
+  color: #374151 !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   letter-spacing: 0.04em;
@@ -111,15 +111,15 @@ html, body {
 }
 
 .driver-checklist label:hover {
-  background-color: #E0D4C8 !important;
-  border-color: #C96A2A !important;
+  background-color: #F3F4F6 !important;
+  border-color: #6B7280 !important;
 }
 
 /* Selected pill — darken entire pill with no outer box */
 .driver-checklist label:has(input:checked) {
-  background-color: #2C1810 !important;
-  color: #F5EDE4 !important;
-  border-color: #2C1810 !important;
+  background-color: #111827 !important;
+  color: #F9FAFB !important;
+  border-color: #111827 !important;
   font-weight: 700 !important;
 }
 
@@ -134,11 +134,11 @@ button:hover {
 }
 
 .modebar-btn path {
-  fill: #8A7060 !important;
+  fill: #6B7280 !important;
 }
 
 .modebar-btn:hover path {
-  fill: #C96A2A !important;
+  fill: #111827 !important;
 }
 
 /* Scrollbar styling */
@@ -148,20 +148,21 @@ button:hover {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F5EDE4;
+  background: #F3F4F6;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #C8B8A8;
+  background: #D1D5DB;
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #A89888;
+  background: #9CA3AF;
 }
 
 /* Graph container */
 .dash-graph {
   border-radius: 8px;
   overflow: hidden;
+  border: 1px solid #E5E7EB;
 }

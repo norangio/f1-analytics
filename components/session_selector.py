@@ -14,14 +14,14 @@ LABEL_STYLE = {
     "fontWeight": "600",
     "letterSpacing": "0.08em",
     "textTransform": "uppercase",
-    "color": "#8A7060",
+    "color": "#6B7280",
 }
 
 DROPDOWN_STYLE = {
-    "backgroundColor": "#EDE3D8",
-    "border": "1px solid #C8B8A8",
+    "backgroundColor": "#FFFFFF",
+    "border": "1px solid #D1D5DB",
     "borderRadius": "6px",
-    "color": "#2C1810",
+    "color": "#111827",
     "fontSize": "13px",
 }
 
@@ -36,8 +36,8 @@ def session_selector() -> html.Div:
             "gap": "16px",
             "alignItems": "flex-end",
             "padding": "16px 24px",
-            "backgroundColor": "#F5EDE4",
-            "borderBottom": "1px solid #D4C2B0",
+            "backgroundColor": "#FFFFFF",
+            "borderBottom": "1px solid #E5E7EB",
         },
         children=[
             # Year
@@ -146,8 +146,8 @@ def session_selector() -> html.Div:
                         id="load-session-btn",
                         n_clicks=0,
                         style={
-                            "backgroundColor": "#C96A2A",
-                            "color": "#FDF8F4",
+                            "backgroundColor": "#111827",
+                            "color": "#F9FAFB",
                             "border": "none",
                             "borderRadius": "6px",
                             "padding": "8px 18px",
@@ -164,8 +164,8 @@ def session_selector() -> html.Div:
             dcc.Loading(
                 id="session-loading",
                 type="dot",
-                color="#C96A2A",
-                children=html.Div(id="session-load-status", style={"fontSize": "12px", "color": "#8A7060", "alignSelf": "center"}),
+                color="#111827",
+                children=html.Div(id="session-load-status", style={"fontSize": "12px", "color": "#6B7280", "alignSelf": "center"}),
             ),
             # Hidden store for loaded session info
             dcc.Store(id="session-store"),

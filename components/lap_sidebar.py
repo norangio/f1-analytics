@@ -6,7 +6,7 @@ from dash import html
 
 def lap_sidebar_empty() -> html.Div:
     return html.Div(
-        style={"padding": "24px 16px", "color": "#8A7060", "fontSize": "13px", "textAlign": "center"},
+        style={"padding": "24px 16px", "color": "#6B7280", "fontSize": "13px", "textAlign": "center"},
         children="Load a session to see lap times.",
     )
 
@@ -24,13 +24,13 @@ def lap_sidebar_table(
     rows = []
     for _, row in df.iterrows():
         driver = row["Driver"]
-        color = driver_colors.get(driver, "#8A7060")
+        color = driver_colors.get(driver, "#6B7280")
         number = numbers.get(driver, "")
         label = f"{number} {driver}" if number else driver
 
         rows.append(
             html.Tr(
-                style={"borderBottom": "1px solid #DDD0C4"},
+                style={"borderBottom": "1px solid #E5E7EB"},
                 children=[
                     html.Td(
                         html.Span(
@@ -82,10 +82,10 @@ def _th_style() -> dict:
         "fontWeight": "600",
         "letterSpacing": "0.08em",
         "textTransform": "uppercase",
-        "color": "#8A7060",
+        "color": "#6B7280",
         "padding": "6px 8px",
         "textAlign": "left",
-        "borderBottom": "1px solid #C8B8A8",
+        "borderBottom": "1px solid #D1D5DB",
         "whiteSpace": "nowrap",
     }
 
@@ -94,7 +94,7 @@ def _td_style(bold: bool = False) -> dict:
     return {
         "fontSize": "12px",
         "fontFamily": "monospace",
-        "color": "#2C1810" if bold else "#7A5C48",
+        "color": "#111827" if bold else "#4B5563",
         "fontWeight": "600" if bold else "400",
         "padding": "7px 8px",
         "whiteSpace": "nowrap",

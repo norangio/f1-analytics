@@ -22,18 +22,18 @@ QUALIFYING_PHASE_CONTROL_STYLE = {
 }
 DRIVER_ACTION_BUTTON_BASE_STYLE = {
     "background": "none",
-    "border": "1px solid #C8B8A8",
+    "border": "1px solid #D1D5DB",
     "borderRadius": "4px",
-    "color": "#8A7060",
+    "color": "#6B7280",
     "fontSize": "11px",
     "padding": "4px 10px",
     "cursor": "pointer",
 }
 DRIVER_ACTION_BUTTON_ACTIVE_STYLE = {
     **DRIVER_ACTION_BUTTON_BASE_STYLE,
-    "backgroundColor": "#2C1810",
-    "border": "1px solid #2C1810",
-    "color": "#F5EDE4",
+    "backgroundColor": "#111827",
+    "border": "1px solid #111827",
+    "color": "#F9FAFB",
     "fontWeight": "700",
 }
 
