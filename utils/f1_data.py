@@ -237,12 +237,15 @@ def get_sector_distances(
 def get_all_lap_times(
     session: fastf1.core.Session,
     drivers: list[str],
+    lap_mode: str = "all",
+    lap_number: int | None = None,
     qualifying_phase: str = "all",
 ) -> pd.DataFrame:
     """
-    Return DataFrame of all valid lap times for selected drivers.
+    Return DataFrame of valid lap times for selected drivers and lap mode.
     Columns: Driver, LapTime (float seconds), Compound (str).
     Excludes pit in/out laps.
+    lap_mode: "all" | "fastest" | "specific"
     """
     rows = []
     for driver in drivers:
@@ -250,14 +253,26 @@ def get_all_lap_times(
         driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
         if driver_laps.empty:
             continue
-        for _, lap in driver_laps.iterrows():
+
+        valid_laps = _filter_valid_non_pit_laps(driver_laps)
+        if valid_laps.empty:
+            continue
+
+        if lap_mode == "specific":
+            if lap_number is None:
+                continue
+            laps_to_use = valid_laps[valid_laps["LapNumber"] == lap_number]
+        elif lap_mode == "fastest":
+            fastest = valid_laps.pick_fastest()
+            if fastest is None or getattr(fastest, "empty", False):
+                continue
+            laps_to_use = pd.DataFrame([fastest])
+        else:
+            laps_to_use = valid_laps
+
+        for _, lap in laps_to_use.iterrows():
             lap_time = lap.get("LapTime")
             if pd.isna(lap_time):
-                continue
-            # Skip pit in/out laps
-            pit_in = lap.get("PitInTime")
-            pit_out = lap.get("PitOutTime")
-            if (pit_in is not None and not pd.isna(pit_in)) or (pit_out is not None and not pd.isna(pit_out)):
                 continue
             compound = str(lap.get("Compound", "UNKNOWN"))
             if compound in ("nan", "None", "NaT", ""):
@@ -267,9 +282,24 @@ def get_all_lap_times(
                 "LapTime": lap_time.total_seconds(),
                 "Compound": compound.upper(),
             })
+
     if not rows:
         return pd.DataFrame(columns=["Driver", "LapTime", "Compound"])
     return pd.DataFrame(rows)
+
+
+def _filter_valid_non_pit_laps(laps):
+    """Keep laps with a valid lap time that are not pit in/out laps."""
+    if laps is None or laps.empty:
+        return laps
+
+    valid_laps = laps[laps["LapTime"].notna()]
+    if valid_laps.empty:
+        return valid_laps
+
+    no_pit_in = valid_laps["PitInTime"].isna() if "PitInTime" in valid_laps.columns else pd.Series(True, index=valid_laps.index)
+    no_pit_out = valid_laps["PitOutTime"].isna() if "PitOutTime" in valid_laps.columns else pd.Series(True, index=valid_laps.index)
+    return valid_laps[no_pit_in & no_pit_out]
 
 
 def _get_qualifying_phase_laps(session: fastf1.core.Session, phase: str):
