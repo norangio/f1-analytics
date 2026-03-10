@@ -234,6 +234,44 @@ def get_sector_distances(
         return None, None
 
 
+def get_all_lap_times(
+    session: fastf1.core.Session,
+    drivers: list[str],
+    qualifying_phase: str = "all",
+) -> pd.DataFrame:
+    """
+    Return DataFrame of all valid lap times for selected drivers.
+    Columns: Driver, LapTime (float seconds), Compound (str).
+    Excludes pit in/out laps.
+    """
+    rows = []
+    for driver in drivers:
+        driver_laps = session.laps.pick_drivers(driver)
+        driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
+        if driver_laps.empty:
+            continue
+        for _, lap in driver_laps.iterrows():
+            lap_time = lap.get("LapTime")
+            if pd.isna(lap_time):
+                continue
+            # Skip pit in/out laps
+            pit_in = lap.get("PitInTime")
+            pit_out = lap.get("PitOutTime")
+            if (pit_in is not None and not pd.isna(pit_in)) or (pit_out is not None and not pd.isna(pit_out)):
+                continue
+            compound = str(lap.get("Compound", "UNKNOWN"))
+            if compound in ("nan", "None", "NaT", ""):
+                compound = "UNKNOWN"
+            rows.append({
+                "Driver": driver,
+                "LapTime": lap_time.total_seconds(),
+                "Compound": compound.upper(),
+            })
+    if not rows:
+        return pd.DataFrame(columns=["Driver", "LapTime", "Compound"])
+    return pd.DataFrame(rows)
+
+
 def _get_qualifying_phase_laps(session: fastf1.core.Session, phase: str):
     """Return laps object for a qualifying phase (Q1/Q2/Q3), or None."""
     if phase not in ("Q1", "Q2", "Q3"):

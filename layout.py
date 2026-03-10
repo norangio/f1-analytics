@@ -4,6 +4,24 @@ from dash import dcc, html
 from components.session_selector import session_selector
 from components.driver_selector import driver_selector
 
+_TAB_STYLE = {
+    "padding": "10px 16px",
+    "fontSize": "12px",
+    "fontWeight": "600",
+    "letterSpacing": "0.04em",
+    "color": "#6B7280",
+    "border": "none",
+    "borderBottom": "2px solid transparent",
+    "backgroundColor": "#FFFFFF",
+    "fontFamily": "Inter, system-ui, -apple-system, sans-serif",
+    "cursor": "pointer",
+}
+_TAB_SELECTED_STYLE = {
+    **_TAB_STYLE,
+    "color": "#111827",
+    "borderBottom": "2px solid #111827",
+}
+
 
 def build_layout() -> html.Div:
     return html.Div(
@@ -12,6 +30,8 @@ def build_layout() -> html.Div:
             "minHeight": "100vh",
             "fontFamily": "Inter, system-ui, -apple-system, sans-serif",
             "color": "#111827",
+            "display": "flex",
+            "flexDirection": "column",
         },
         children=[
             # Header
@@ -56,8 +76,40 @@ def build_layout() -> html.Div:
             session_selector(),
             driver_selector(),
 
-            # Main content: charts + sidebar
+            # Tab bar
+            dcc.Tabs(
+                id="main-tabs",
+                value="telemetry",
+                children=[
+                    dcc.Tab(
+                        label="Telemetry",
+                        value="telemetry",
+                        style=_TAB_STYLE,
+                        selected_style=_TAB_SELECTED_STYLE,
+                    ),
+                    dcc.Tab(
+                        label="Lap Times",
+                        value="laptimes",
+                        style=_TAB_STYLE,
+                        selected_style=_TAB_SELECTED_STYLE,
+                    ),
+                ],
+                style={
+                    "backgroundColor": "#FFFFFF",
+                    "borderBottom": "1px solid #E5E7EB",
+                    "padding": "0 24px",
+                    "height": "40px",
+                },
+                colors={
+                    "border": "transparent",
+                    "primary": "#111827",
+                    "background": "#FFFFFF",
+                },
+            ),
+
+            # Telemetry content (existing)
             html.Div(
+                id="telemetry-content",
                 style={
                     "display": "flex",
                     "gap": "0",
@@ -105,6 +157,24 @@ def build_layout() -> html.Div:
                             ),
                             html.Div(id="lap-times-sidebar"),
                         ],
+                    ),
+                ],
+            ),
+
+            # Lap Times content (new)
+            html.Div(
+                id="laptimes-content",
+                style={"display": "none"},
+                children=[
+                    dcc.Graph(
+                        id="laptime-boxplot-graph",
+                        config={
+                            "displayModeBar": True,
+                            "modeBarButtonsToRemove": ["select2d", "lasso2d", "autoScale2d"],
+                            "displaylogo": False,
+                            "responsive": True,
+                        },
+                        style={"width": "100%"},
                     ),
                 ],
             ),

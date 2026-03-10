@@ -5,6 +5,7 @@ from layout import build_layout
 import callbacks.session_callbacks  # noqa: F401
 import callbacks.chart_callbacks    # noqa: F401
 import callbacks.sidebar_callbacks  # noqa: F401
+import callbacks.laptime_callbacks  # noqa: F401
 
 app.layout = build_layout()
 

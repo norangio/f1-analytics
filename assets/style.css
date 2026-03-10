@@ -160,6 +160,25 @@ button:hover {
   background: #9CA3AF;
 }
 
+/* Tab overrides — Dash defaults to vertical flex */
+.tab-parent {
+  flex-direction: row !important;
+}
+
+.tab-container {
+  flex-direction: row !important;
+  border-bottom: none !important;
+}
+
+.tab-container .tab {
+  flex: none !important;
+}
+
+/* Hide Dash's built-in tab content panel (we manage content visibility ourselves) */
+.tab-content {
+  display: none !important;
+}
+
 /* Graph container */
 .dash-graph {
   border-radius: 8px;
