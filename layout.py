@@ -3,6 +3,7 @@
 from dash import dcc, html
 from components.session_selector import session_selector
 from components.driver_selector import driver_selector
+from components.laptime_summary_table import laptime_summary_empty
 
 _TAB_STYLE = {
     "padding": "10px 16px",
@@ -175,6 +176,17 @@ def build_layout() -> html.Div:
                             "responsive": True,
                         },
                         style={"width": "100%"},
+                    ),
+                    html.Div(
+                        id="laptime-summary-table",
+                        style={
+                            "marginTop": "10px",
+                            "padding": "10px 12px",
+                            "backgroundColor": "#FFFFFF",
+                            "border": "1px solid #E5E7EB",
+                            "borderRadius": "8px",
+                        },
+                        children=laptime_summary_empty(),
                     ),
                 ],
             ),

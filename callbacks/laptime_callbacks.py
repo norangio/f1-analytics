@@ -5,6 +5,7 @@ from dash import Input, Output, State, clientside_callback
 from dash_app import app
 from utils import f1_data
 from components.laptime_boxplot import build_laptime_boxplot, empty_boxplot_figure
+from components.laptime_summary_table import build_laptime_summary_table, laptime_summary_empty
 
 TELEMETRY_CONTENT_STYLE = {
     "display": "flex",
@@ -47,6 +48,7 @@ app.clientside_callback(
 
 @app.callback(
     Output("laptime-boxplot-graph", "figure"),
+    Output("laptime-summary-table", "children"),
     Input("main-tabs", "value"),
     Input("driver-checklist", "value"),
     Input("qualifying-phase-dropdown", "value"),
@@ -56,7 +58,7 @@ app.clientside_callback(
 )
 def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, session_data, driver_colors):
     if tab != "laptimes" or not selected_drivers or session_data is None:
-        return empty_boxplot_figure()
+        return empty_boxplot_figure(), laptime_summary_empty()
 
     year = session_data["year"]
     round_number = session_data["round"]
@@ -73,9 +75,18 @@ def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, session_data
         )
 
         if lap_data.empty:
-            return empty_boxplot_figure("No lap time data available for selected drivers")
+            return (
+                empty_boxplot_figure("No lap time data available for selected drivers"),
+                laptime_summary_empty("No lap-time samples available for this selection."),
+            )
 
-        return build_laptime_boxplot(lap_data, colors)
+        return (
+            build_laptime_boxplot(lap_data, colors),
+            build_laptime_summary_table(lap_data),
+        )
 
     except Exception as e:
-        return empty_boxplot_figure(f"Error loading lap times: {str(e)[:80]}")
+        return (
+            empty_boxplot_figure(f"Error loading lap times: {str(e)[:80]}"),
+            laptime_summary_empty("Error loading lap-time summary."),
+        )

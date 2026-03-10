@@ -18,11 +18,14 @@ callbacks/
   session_callbacks.py    # Populates year/race/session/lap controls + driver checklist
   chart_callbacks.py      # Renders telemetry charts (lap mode + qualifying phase)
   sidebar_callbacks.py    # Renders lap time + sector sidebar table (phase-aware for qualifying)
+  laptime_callbacks.py    # Renders lap-time boxplot tab + compound summary table
 components/
   session_selector.py     # Dropdown controls (year, race, session, qualifying phase, lap mode)
   driver_selector.py      # Driver pill checklist
   telemetry_charts.py     # Plotly figure builders (3-subplot, shared x-axis)
   lap_sidebar.py          # Lap time table component
+  laptime_boxplot.py      # Lap-time boxplot with tire compound markers
+  laptime_summary_table.py  # Compound-level quartiles (Q1/Median/Q3) for selected data
 utils/
   f1_data.py              # FastF1 loading helpers, telemetry + lap time extraction
   colors.py               # Team → color mapping, driver → team mapping
@@ -57,7 +60,11 @@ When two selected drivers share the same team, one trace is rendered dotted so s
 
 ### Qualifying Views
 When session type is `Q`, the UI exposes a qualifying phase dropdown (`All`, `Q1`, `Q2`, `Q3`).
-Telemetry, lap-number options, and the right-hand lap-time sidebar are filtered to the selected phase.
+Telemetry, lap-number options, the right-hand lap-time sidebar, and Lap Times tab outputs are filtered to the selected phase.
+
+### Lap Times Tab
+- Boxplot chart uses all valid laps for selected drivers (excluding pit in/out laps) with compound markers.
+- Summary table under the chart is computed from the exact same filtered lap set and reports per-compound `Laps`, `Q1`, `Median`, and `Q3`.
 
 ### Driver Pills
 Selected driver pills are rendered as a darker fill with white text, without an extra outer box.
