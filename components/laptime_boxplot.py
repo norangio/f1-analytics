@@ -25,6 +25,7 @@ COMPOUND_MARKERS = {
 def build_laptime_boxplot(
     lap_data: pd.DataFrame,
     driver_colors: dict[str, str],
+    driver_order: list[str] | None = None,
 ) -> go.Figure:
     """
     Build boxplot of lap times per driver with tire compound scatter overlay.
@@ -33,9 +34,7 @@ def build_laptime_boxplot(
     if lap_data.empty:
         return empty_boxplot_figure()
 
-    # Sort drivers by median lap time
-    medians = lap_data.groupby("Driver")["LapTime"].median().sort_values()
-    sorted_drivers = medians.index.tolist()
+    sorted_drivers = driver_order or get_sorted_drivers_by_median(lap_data)
 
     fig = go.Figure()
     rng = np.random.RandomState(42)
@@ -94,6 +93,12 @@ def build_laptime_boxplot(
 
     _apply_boxplot_theme(fig, sorted_drivers, lap_data["LapTime"])
     return fig
+
+
+def get_sorted_drivers_by_median(lap_data: pd.DataFrame) -> list[str]:
+    """Return drivers sorted by median lap time (fastest left)."""
+    medians = lap_data.groupby("Driver")["LapTime"].median().sort_values()
+    return medians.index.tolist()
 
 
 def empty_boxplot_figure(

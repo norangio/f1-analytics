@@ -1,7 +1,9 @@
-"""Summary table for lap time distribution by tire compound."""
+"""Summary table for lap time distribution by driver and tire compound."""
 
 import pandas as pd
 from dash import html
+
+from components.laptime_boxplot import get_sorted_drivers_by_median
 
 _COMPOUND_ORDER = {
     "SOFT": 0,
@@ -14,7 +16,7 @@ _COMPOUND_ORDER = {
 
 
 def laptime_summary_empty(
-    message: str = "Load a session and select drivers to see compound quartiles.",
+    message: str = "Load a session and select drivers to see per-driver compound quartiles.",
 ) -> html.Div:
     return html.Div(
         message,
@@ -26,41 +28,64 @@ def laptime_summary_empty(
     )
 
 
-def build_laptime_summary_table(lap_data: pd.DataFrame) -> html.Div:
-    """Render compound-level quartiles for the same data shown in the boxplot."""
+def build_laptime_summary_table(
+    lap_data: pd.DataFrame,
+    driver_order: list[str] | None = None,
+) -> html.Div:
+    """Render per-driver + compound quartiles for the same data shown in the boxplot."""
     if lap_data.empty:
         return laptime_summary_empty("No lap-time samples available for this selection.")
 
     data = lap_data.copy()
+    data["Driver"] = data["Driver"].astype(str)
     data["Compound"] = data["Compound"].fillna("UNKNOWN").astype(str).str.upper()
+    sorted_drivers = driver_order or get_sorted_drivers_by_median(data)
+    driver_rank = {driver: idx for idx, driver in enumerate(sorted_drivers)}
 
-    grouped = data.groupby("Compound")["LapTime"]
+    grouped = data.groupby(["Driver", "Compound"])["LapTime"]
     summary = grouped.quantile([0.25, 0.5, 0.75]).unstack()
-    summary = summary.rename(columns={0.25: "Q1", 0.5: "Median", 0.75: "Q3"})
+    summary = summary.rename(columns={0.25: "q25", 0.5: "median", 0.75: "q75"})
     summary["Laps"] = grouped.size()
     summary = summary.reset_index()
-    summary["SortKey"] = summary["Compound"].map(lambda c: _COMPOUND_ORDER.get(c, 999))
-    summary = summary.sort_values(["SortKey", "Compound"]).drop(columns=["SortKey"])
+    summary["DriverSort"] = summary["Driver"].map(lambda d: driver_rank.get(d, 999))
+    summary["CompoundSort"] = summary["Compound"].map(lambda c: _COMPOUND_ORDER.get(c, 999))
+    summary = (
+        summary
+        .sort_values(["DriverSort", "CompoundSort", "Compound"])
+        .drop(columns=["DriverSort", "CompoundSort"])
+    )
 
     rows = []
+    last_driver = None
     for _, row in summary.iterrows():
+        current_driver = str(row["Driver"])
+        first_row_for_driver = current_driver != last_driver
+        row_style = {"borderBottom": "1px solid #E5E7EB"}
+        if first_row_for_driver and last_driver is not None:
+            row_style["borderTop"] = "2px solid #D1D5DB"
+
         rows.append(
             html.Tr(
-                style={"borderBottom": "1px solid #E5E7EB"},
+                style=row_style,
                 children=[
-                    html.Td(row["Compound"].title(), style=_td_style("left", bold=True)),
+                    html.Td(
+                        current_driver if first_row_for_driver else "",
+                        style=_td_style("left", bold=first_row_for_driver),
+                    ),
+                    html.Td(row["Compound"].title(), style=_td_style("left")),
                     html.Td(str(int(row["Laps"])), style=_td_style("right")),
-                    html.Td(_format_laptime(float(row["Q1"])), style=_td_style("right")),
-                    html.Td(_format_laptime(float(row["Median"])), style=_td_style("right", bold=True)),
-                    html.Td(_format_laptime(float(row["Q3"])), style=_td_style("right")),
+                    html.Td(_format_laptime(float(row["q25"])), style=_td_style("right")),
+                    html.Td(_format_laptime(float(row["median"])), style=_td_style("right", bold=True)),
+                    html.Td(_format_laptime(float(row["q75"])), style=_td_style("right")),
                 ],
             )
         )
+        last_driver = current_driver
 
     return html.Div(
         children=[
             html.Div(
-                "Lap-Time Summary by Compound",
+                "Lap-Time Summary by Driver and Compound",
                 style={
                     "fontSize": "12px",
                     "fontWeight": "700",
@@ -76,11 +101,12 @@ def build_laptime_summary_table(lap_data: pd.DataFrame) -> html.Div:
                     html.Thead(
                         html.Tr(
                             children=[
+                                html.Th("Driver", style=_th_style("left")),
                                 html.Th("Compound", style=_th_style("left")),
                                 html.Th("Laps", style=_th_style("right")),
-                                html.Th("Q1", style=_th_style("right")),
-                                html.Th("Median", style=_th_style("right")),
-                                html.Th("Q3", style=_th_style("right")),
+                                html.Th("q25", style=_th_style("right")),
+                                html.Th("median", style=_th_style("right")),
+                                html.Th("q75", style=_th_style("right")),
                             ]
                         )
                     ),

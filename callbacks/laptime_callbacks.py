@@ -4,7 +4,11 @@ from dash import Input, Output, State, clientside_callback
 
 from dash_app import app
 from utils import f1_data
-from components.laptime_boxplot import build_laptime_boxplot, empty_boxplot_figure
+from components.laptime_boxplot import (
+    build_laptime_boxplot,
+    empty_boxplot_figure,
+    get_sorted_drivers_by_median,
+)
 from components.laptime_summary_table import build_laptime_summary_table, laptime_summary_empty
 
 TELEMETRY_CONTENT_STYLE = {
@@ -80,9 +84,10 @@ def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, session_data
                 laptime_summary_empty("No lap-time samples available for this selection."),
             )
 
+        driver_order = get_sorted_drivers_by_median(lap_data)
         return (
-            build_laptime_boxplot(lap_data, colors),
-            build_laptime_summary_table(lap_data),
+            build_laptime_boxplot(lap_data, colors, driver_order=driver_order),
+            build_laptime_summary_table(lap_data, driver_order=driver_order),
         )
 
     except Exception as e:

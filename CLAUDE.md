@@ -25,7 +25,7 @@ components/
   telemetry_charts.py     # Plotly figure builders (3-subplot, shared x-axis)
   lap_sidebar.py          # Lap time table component
   laptime_boxplot.py      # Lap-time boxplot with tire compound markers
-  laptime_summary_table.py  # Compound-level quartiles (Q1/Median/Q3) for selected data
+  laptime_summary_table.py  # Driver+compound quartiles (q25/median/q75) for selected data
 utils/
   f1_data.py              # FastF1 loading helpers, telemetry + lap time extraction
   colors.py               # Team → color mapping, driver → team mapping
@@ -64,7 +64,7 @@ Telemetry, lap-number options, the right-hand lap-time sidebar, and Lap Times ta
 
 ### Lap Times Tab
 - Boxplot chart uses all valid laps for selected drivers (excluding pit in/out laps) with compound markers.
-- Summary table under the chart is computed from the exact same filtered lap set and reports per-compound `Laps`, `Q1`, `Median`, and `Q3`.
+- Summary table under the chart is computed from the exact same filtered lap set and reports per-driver/per-compound `Laps`, `q25`, `median`, and `q75`, ordered by the same driver sequence as the boxplot.
 
 ### Driver Pills
 Selected driver pills are rendered as a darker fill with white text, without an extra outer box.
