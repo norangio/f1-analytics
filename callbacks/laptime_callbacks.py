@@ -56,11 +56,13 @@ app.clientside_callback(
     Input("main-tabs", "value"),
     Input("driver-checklist", "value"),
     Input("qualifying-phase-dropdown", "value"),
+    Input("lap-mode-dropdown", "value"),
+    Input("lap-number-dropdown", "value"),
     State("session-store", "data"),
     State("driver-colors-store", "data"),
     prevent_initial_call=True,
 )
-def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, session_data, driver_colors):
+def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, lap_number, session_data, driver_colors):
     if tab != "laptimes" or not selected_drivers or session_data is None:
         return empty_boxplot_figure(), laptime_summary_empty()
 
@@ -75,6 +77,8 @@ def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, session_data
         lap_data = f1_data.get_all_lap_times(
             session,
             selected_drivers,
+            lap_mode=lap_mode or "all",
+            lap_number=lap_number if lap_mode == "specific" else None,
             qualifying_phase=effective_phase or "all",
         )
 

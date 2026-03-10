@@ -110,10 +110,11 @@ def session_selector() -> html.Div:
                     dcc.Dropdown(
                         id="lap-mode-dropdown",
                         options=[
+                            {"label": "All Laps", "value": "all"},
                             {"label": "Fastest Lap", "value": "fastest"},
                             {"label": "Session Lap", "value": "specific"},
                         ],
-                        value="fastest",
+                        value="all",
                         clearable=False,
                         style=DROPDOWN_STYLE,
                         className="f1-dropdown",
