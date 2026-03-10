@@ -243,11 +243,15 @@ def get_all_lap_times(
 ) -> pd.DataFrame:
     """
     Return DataFrame of valid lap times for selected drivers and lap mode.
-    Columns: Driver, LapTime (float seconds), Compound (str).
+    Columns: Driver, LapTime (float seconds), Compound (str),
+    LapNumber (int), SessionId (str).
     Excludes pit in/out laps.
     lap_mode: "all" | "fastest" | "specific"
     """
     rows = []
+    session_id = _get_session_id(session)
+    selected_qual_phase = qualifying_phase if qualifying_phase in ("Q1", "Q2", "Q3") else None
+    qual_phase_lookup = _get_qualifying_phase_lookup(session) if session_id == "Q" and qualifying_phase == "all" else {}
     for driver in drivers:
         driver_laps = session.laps.pick_drivers(driver)
         driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
@@ -281,11 +285,34 @@ def get_all_lap_times(
                 "Driver": driver,
                 "LapTime": lap_time.total_seconds(),
                 "Compound": compound.upper(),
+                "LapNumber": int(lap.get("LapNumber")) if not pd.isna(lap.get("LapNumber")) else None,
+                "SessionId": selected_qual_phase or qual_phase_lookup.get(lap.name, session_id),
             })
 
     if not rows:
-        return pd.DataFrame(columns=["Driver", "LapTime", "Compound"])
+        return pd.DataFrame(columns=["Driver", "LapTime", "Compound", "LapNumber", "SessionId"])
     return pd.DataFrame(rows)
+
+
+def _get_session_id(session: fastf1.core.Session) -> str:
+    """Best-effort short session identifier (e.g., FP1, Q, R)."""
+    name = str(getattr(session, "name", "")).strip()
+    reverse_map = {label: key for key, label in SESSION_TYPES.items()}
+    if name in reverse_map:
+        return reverse_map[name]
+    return "Q" if name.lower() == "qualifying" else "SESSION"
+
+
+def _get_qualifying_phase_lookup(session: fastf1.core.Session) -> dict:
+    """Map lap index to qualifying phase for sessions with Q1/Q2/Q3 data."""
+    lookup = {}
+    split_laps = getattr(session.laps, "split_qualifying_sessions", lambda: [])()
+    for phase, phase_laps in zip(("Q1", "Q2", "Q3"), split_laps):
+        if phase_laps is None or phase_laps.empty:
+            continue
+        for idx in phase_laps.index:
+            lookup[idx] = phase
+    return lookup
 
 
 def _filter_valid_non_pit_laps(laps):
