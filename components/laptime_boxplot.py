@@ -83,12 +83,25 @@ def build_laptime_boxplot(
             },
             legendgroup=f"compound-{compound}",
             hovertemplate=(
-                "<b>%{text}</b><br>"
+                "<b>%{customdata[0]}</b><br>"
                 + compound.title()
-                + "<br>%{customdata}<extra></extra>"
+                + "<br>Lap Time: %{customdata[1]}"
+                + "<br>Lap: %{customdata[2]}"
+                + "<br>Session: %{customdata[3]}<extra></extra>"
             ),
-            text=compound_data["Driver"].values,
-            customdata=[_format_laptime(t) for t in compound_data["LapTime"].values],
+            customdata=np.stack([
+                compound_data["Driver"].fillna("-").astype(str).values,
+                np.array([_format_laptime(t) for t in compound_data["LapTime"].values]),
+                compound_data.get("LapNumber", pd.Series(index=compound_data.index, dtype="object"))
+                .fillna("-")
+                .astype(int, errors="ignore")
+                .astype(str)
+                .values,
+                compound_data.get("SessionId", pd.Series(index=compound_data.index, dtype="object"))
+                .fillna("-")
+                .astype(str)
+                .values,
+            ], axis=-1),
         ))
 
     _apply_boxplot_theme(fig, sorted_drivers, lap_data["LapTime"])
