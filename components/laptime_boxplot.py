@@ -55,7 +55,7 @@ def build_laptime_boxplot(
             line={"color": WHISKER_COLOR, "width": 1.2},
             fillcolor=_hex_to_rgba(color, 0.35),
             width=violin_width,
-            box_visible=True,
+            box_visible=False,
             meanline_visible=False,
             showlegend=False,
             hoverinfo="skip",
@@ -108,16 +108,15 @@ def build_laptime_boxplot(
             ], axis=-1),
         ))
 
-    median_points = [float(lap_data[lap_data["Driver"] == driver]["LapTime"].median()) for driver in sorted_drivers]
+    mean_points = [float(lap_data[lap_data["Driver"] == driver]["LapTime"].mean()) for driver in sorted_drivers]
     fig.add_trace(go.Scatter(
         x=list(range(len(sorted_drivers))),
-        y=median_points,
-        mode="lines+markers",
-        name="Median",
-        line={"color": "#111827", "width": 2},
+        y=mean_points,
+        mode="markers",
+        name="Mean",
         marker={"size": 6, "color": "#111827"},
-        hovertemplate="<b>%{customdata[0]}</b><br>Median: %{customdata[1]}<extra></extra>",
-        customdata=np.stack([sorted_drivers, [_format_laptime(v) for v in median_points]], axis=-1),
+        hovertemplate="<b>%{customdata[0]}</b><br>Mean: %{customdata[1]}<extra></extra>",
+        customdata=np.stack([sorted_drivers, [_format_laptime(v) for v in mean_points]], axis=-1),
     ))
 
     _apply_boxplot_theme(fig, sorted_drivers, lap_data["LapTime"], robust_axis=robust_axis)
