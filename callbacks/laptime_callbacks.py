@@ -58,11 +58,12 @@ app.clientside_callback(
     Input("qualifying-phase-dropdown", "value"),
     Input("lap-mode-dropdown", "value"),
     Input("lap-number-dropdown", "value"),
+    Input("laptime-robust-axis-toggle", "value"),
     State("session-store", "data"),
     State("driver-colors-store", "data"),
     prevent_initial_call=True,
 )
-def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, lap_number, session_data, driver_colors):
+def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, lap_number, robust_axis_toggle, session_data, driver_colors):
     if tab != "laptimes" or not selected_drivers or session_data is None:
         return empty_boxplot_figure(), laptime_summary_empty()
 
@@ -89,8 +90,9 @@ def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, la
             )
 
         driver_order = get_sorted_drivers_by_median(lap_data)
+        robust_axis = "robust" in (robust_axis_toggle or [])
         return (
-            build_laptime_boxplot(lap_data, colors, driver_order=driver_order),
+            build_laptime_boxplot(lap_data, colors, driver_order=driver_order, robust_axis=robust_axis),
             build_laptime_summary_table(lap_data, driver_order=driver_order),
         )
 

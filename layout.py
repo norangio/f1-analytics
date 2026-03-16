@@ -167,6 +167,22 @@ def build_layout() -> html.Div:
                 id="laptimes-content",
                 style={"display": "none"},
                 children=[
+                    html.Div(
+                        style={
+                            "display": "flex",
+                            "justifyContent": "flex-end",
+                            "marginBottom": "8px",
+                        },
+                        children=[
+                            dcc.Checklist(
+                                id="laptime-robust-axis-toggle",
+                                options=[{"label": "Robust y-axis (5-95%)", "value": "robust"}],
+                                value=["robust"],
+                                labelStyle={"fontSize": "12px", "color": "#4B5563", "cursor": "pointer"},
+                                inputStyle={"marginRight": "6px"},
+                            ),
+                        ],
+                    ),
                     dcc.Graph(
                         id="laptime-boxplot-graph",
                         config={
