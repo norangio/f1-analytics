@@ -1,4 +1,4 @@
-"""Lap time boxplot figure builder with tire compound markers."""
+"""Lap time violin plot figure builder with tire compound markers."""
 
 import numpy as np
 import pandas as pd
@@ -26,9 +26,10 @@ def build_laptime_boxplot(
     lap_data: pd.DataFrame,
     driver_colors: dict[str, str],
     driver_order: list[str] | None = None,
+    robust_axis: bool = False,
 ) -> go.Figure:
     """
-    Build boxplot of lap times per driver with tire compound scatter overlay.
+    Build violin plot of lap times per driver with tire compound scatter overlay.
     Drivers sorted by median lap time (fastest left).
     """
     if lap_data.empty:
@@ -39,20 +40,23 @@ def build_laptime_boxplot(
     fig = go.Figure()
     rng = np.random.RandomState(42)
 
-    # Add box per driver
+    violin_width, point_jitter = _get_plot_spacing(len(sorted_drivers))
+
+    # Add violin per driver
     for i, driver in enumerate(sorted_drivers):
         driver_data = lap_data[lap_data["Driver"] == driver]
         color = driver_colors.get(driver, "#9CA3AF")
 
-        fig.add_trace(go.Box(
+        fig.add_trace(go.Violin(
             y=driver_data["LapTime"].values,
             x=[i] * len(driver_data),
             name=driver,
-            boxpoints=False,
+            points=False,
             line={"color": WHISKER_COLOR, "width": 1.2},
             fillcolor=_hex_to_rgba(color, 0.35),
-            whiskerwidth=0.5,
-            width=0.45,
+            width=violin_width,
+            box_visible=True,
+            meanline_visible=False,
             showlegend=False,
             hoverinfo="skip",
         ))
@@ -66,7 +70,7 @@ def build_laptime_boxplot(
         x_positions = []
         for _, row in compound_data.iterrows():
             driver_idx = sorted_drivers.index(row["Driver"])
-            jitter = rng.uniform(-0.16, 0.16)
+            jitter = rng.uniform(-point_jitter, point_jitter)
             x_positions.append(driver_idx + jitter)
 
         fig.add_trace(go.Scatter(
@@ -104,7 +108,19 @@ def build_laptime_boxplot(
             ], axis=-1),
         ))
 
-    _apply_boxplot_theme(fig, sorted_drivers, lap_data["LapTime"])
+    median_points = [float(lap_data[lap_data["Driver"] == driver]["LapTime"].median()) for driver in sorted_drivers]
+    fig.add_trace(go.Scatter(
+        x=list(range(len(sorted_drivers))),
+        y=median_points,
+        mode="lines+markers",
+        name="Median",
+        line={"color": "#111827", "width": 2},
+        marker={"size": 6, "color": "#111827"},
+        hovertemplate="<b>%{customdata[0]}</b><br>Median: %{customdata[1]}<extra></extra>",
+        customdata=np.stack([sorted_drivers, [_format_laptime(v) for v in median_points]], axis=-1),
+    ))
+
+    _apply_boxplot_theme(fig, sorted_drivers, lap_data["LapTime"], robust_axis=robust_axis)
     return fig
 
 
@@ -142,11 +158,17 @@ def _apply_boxplot_theme(
     fig: go.Figure,
     sorted_drivers: list[str],
     lap_times: pd.Series,
+    robust_axis: bool = False,
 ) -> None:
     y_min = float(lap_times.min())
     y_max = float(lap_times.max())
+    if robust_axis:
+        p05 = float(np.percentile(lap_times.values, 5))
+        p95 = float(np.percentile(lap_times.values, 95))
+        y_min, y_max = p05, p95
+
     y_range = y_max - y_min
-    margin = max(y_range * 0.06, 0.5)
+    margin = max(y_range * 0.08, 0.35)
 
     # Choose tick interval based on range
     if y_range > 30:
@@ -195,6 +217,18 @@ def _apply_boxplot_theme(
         dragmode="zoom",
     )
 
+    if robust_axis:
+        fig.add_annotation(
+            text="Y-axis: 5th–95th percentile range",
+            xref="paper",
+            yref="paper",
+            x=1,
+            y=1.13,
+            showarrow=False,
+            xanchor="right",
+            font={"size": 11, "color": "#6B7280"},
+        )
+
     fig.update_xaxes(
         tickvals=list(range(len(sorted_drivers))),
         ticktext=sorted_drivers,
@@ -229,3 +263,11 @@ def _hex_to_rgba(hex_color: str, alpha: float) -> str:
         return f"rgba(156, 163, 175, {alpha})"
     r, g, b = int(hex_color[0:2], 16), int(hex_color[2:4], 16), int(hex_color[4:6], 16)
     return f"rgba({r}, {g}, {b}, {alpha})"
+
+
+def _get_plot_spacing(driver_count: int) -> tuple[float, float]:
+    if driver_count <= 3:
+        return 0.34, 0.2
+    if driver_count <= 6:
+        return 0.4, 0.17
+    return 0.46, 0.14
