@@ -59,11 +59,15 @@ def get_available_sessions(year: int, round_number: int) -> list[dict]:
 
 
 @lru_cache(maxsize=12)
+def load_session_laps(year: int, round_number: int, session_key: str) -> fastf1.core.Session:
+    """Load and return a FastF1 session with lap data but without telemetry."""
+    return _load_session(year, round_number, session_key, telemetry=False)
+
+
+@lru_cache(maxsize=12)
 def load_session(year: int, round_number: int, session_key: str) -> fastf1.core.Session:
     """Load and return a FastF1 session with telemetry data."""
-    session = fastf1.get_session(year, round_number, session_key)
-    session.load(telemetry=True, laps=True, weather=False, messages=False)
-    return session
+    return _load_session(year, round_number, session_key, telemetry=True)
 
 
 def get_drivers_in_session(session: fastf1.core.Session) -> list[str]:
@@ -381,3 +385,15 @@ def _format_timedelta(td) -> str:
     if minutes > 0:
         return f"{minutes}:{seconds:06.3f}"
     return f"{seconds:.3f}"
+
+
+def _load_session(
+    year: int,
+    round_number: int,
+    session_key: str,
+    *,
+    telemetry: bool,
+) -> fastf1.core.Session:
+    session = fastf1.get_session(year, round_number, session_key)
+    session.load(telemetry=telemetry, laps=True, weather=False, messages=False)
+    return session

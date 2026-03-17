@@ -67,7 +67,8 @@ Telemetry, lap-number options, the right-hand lap-time sidebar, and Lap Times ta
 - Summary table under the chart is computed from the exact same filtered lap set and reports per-driver/per-compound `Laps`, `q25`, `median`, and `q75`, ordered by the same driver sequence as the boxplot.
 
 ### Telemetry Performance
-- `utils/f1_data.load_session()` is memoized in-process, so repeated driver/lap selections reuse the already loaded FastF1 session.
+- `utils/f1_data.load_session_laps()` is memoized in-process for the initial session/sidebar/lap-times path so the app can load laps/metadata without paying the telemetry cost up front.
+- `utils/f1_data.load_session()` is memoized in-process for the telemetry path, so repeated driver/lap selections reuse the already loaded FastF1 session.
 - Telemetry charts use `lap.get_car_data().add_distance()` because the UI only needs `Distance`, `Speed`, `Throttle`, and `Brake`; avoid `get_telemetry()` unless merged channels are actually required.
 
 ### Driver Pills

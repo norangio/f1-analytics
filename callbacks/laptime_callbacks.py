@@ -73,7 +73,7 @@ def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, la
     colors = driver_colors or {}
 
     try:
-        session = f1_data.load_session(year, round_number, session_key)
+        session = f1_data.load_session_laps(year, round_number, session_key)
         effective_phase = qualifying_phase if session_key == "Q" else "all"
         lap_data = f1_data.get_all_lap_times(
             session,

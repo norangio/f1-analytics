@@ -24,7 +24,7 @@ def update_lap_sidebar(session_data, qualifying_phase, driver_colors):
     colors = driver_colors or {}
 
     try:
-        session = f1_data.load_session(year, round_number, session_key)
+        session = f1_data.load_session_laps(year, round_number, session_key)
         effective_phase = qualifying_phase if session_key == "Q" else "all"
         df = f1_data.get_lap_times_table(session, qualifying_phase=effective_phase or "all")
         driver_numbers = session_data.get("driver_numbers", {})

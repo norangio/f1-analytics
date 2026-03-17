@@ -33,7 +33,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-App runs at `http://localhost:8050`. FastF1 caches raw session data to `data/cache/` on first load, and the app reuses loaded sessions in-process so driver-selection changes stay fast.
+App runs at `http://localhost:8050`. FastF1 caches raw session data to `data/cache/` on first load, the app uses a lighter laps-only session load for the initial view, and full telemetry is loaded only when the telemetry chart needs it.
 
 ## Deployment
 

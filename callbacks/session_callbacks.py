@@ -68,7 +68,7 @@ def load_session(n_clicks, year, round_number, session_key):
         raise PreventUpdate
 
     try:
-        session = f1_data.load_session(year, round_number, session_key)
+        session = f1_data.load_session_laps(year, round_number, session_key)
         drivers = f1_data.get_drivers_in_session(session)
         colors = assign_driver_colors(drivers)
 
