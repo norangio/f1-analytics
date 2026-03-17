@@ -1,6 +1,8 @@
 """FastF1 data loading helpers with disk caching."""
 
 import os
+from functools import lru_cache
+
 import fastf1
 import pandas as pd
 
@@ -56,6 +58,7 @@ def get_available_sessions(year: int, round_number: int) -> list[dict]:
         return [{"key": k, "label": v} for k, v in SESSION_TYPES.items()]
 
 
+@lru_cache(maxsize=12)
 def load_session(year: int, round_number: int, session_key: str) -> fastf1.core.Session:
     """Load and return a FastF1 session with telemetry data."""
     session = fastf1.get_session(year, round_number, session_key)
@@ -138,7 +141,7 @@ def get_lap_times_table(
     """
     rows = []
     for driver in get_drivers_in_session(session):
-        driver_laps = session.laps.pick_driver(driver)
+        driver_laps = session.laps.pick_drivers(driver)
         driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
         if driver_laps.empty:
             continue
@@ -181,7 +184,7 @@ def get_telemetry(
     """
     result = {}
     for driver in drivers:
-        driver_laps = session.laps.pick_driver(driver)
+        driver_laps = session.laps.pick_drivers(driver)
         driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
         if driver_laps.empty:
             continue
@@ -194,7 +197,8 @@ def get_telemetry(
             else:
                 lap = driver_laps.pick_fastest()
 
-            tel = lap.get_telemetry().add_distance()
+            # These charts only use car channels, so avoid the slower merged telemetry payload.
+            tel = lap.get_car_data().add_distance()
             tel = tel[["Distance", "Speed", "Throttle", "Brake"]].dropna()
             result[driver] = tel
         except Exception:
@@ -212,13 +216,13 @@ def get_sector_distances(
     for the fastest lap of a driver.
     """
     try:
-        driver_laps = session.laps.pick_driver(driver)
+        driver_laps = session.laps.pick_drivers(driver)
         driver_laps = _filter_laps_by_qualifying_phase(session, driver_laps, qualifying_phase)
         if driver_laps.empty:
             return None, None
 
         lap = driver_laps.pick_fastest()
-        tel = lap.get_telemetry().add_distance()
+        tel = lap.get_car_data().add_distance()
         total = float(tel["Distance"].max())
         # Estimate sector splits from timing if available
         s1 = lap["Sector1Time"]

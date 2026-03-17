@@ -9,8 +9,8 @@ Live at [f1.norangio.dev](https://f1.norangio.dev)
 - **Session browser** — any race, qualifying, or practice session from 2021–2026
 - **Qualifying phase filter** — for qualifying sessions, compare All laps or only Q1/Q2/Q3
 - **Lap selection** — compare either each driver's fastest lap (default) or a specific lap number from the selected session
-- **Telemetry charts** — speed, throttle, and brake traces per driver, synchronized on lap distance
-- **Lap-time boxplots** — per-driver lap-time distribution with tire compound markers
+- **Telemetry charts** — speed, throttle, and brake traces per driver, synchronized on lap distance and backed by cached FastF1 session/car data
+- **Lap-time boxplots** — per-driver lap-time distribution with tire compound markers and median dots
 - **Driver/compound summary table** — for the current Lap Times selection, shows per-driver/per-compound lap count + `q25`/`median`/`q75`
 - **Neutral light UI** — white/gray app surfaces with high-contrast text for day-to-day readability
 - **Sector markers** — vertical bands showing S1/S2/S3 boundaries
@@ -33,7 +33,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-App runs at `http://localhost:8050`. FastF1 caches session data to `data/cache/` on first load.
+App runs at `http://localhost:8050`. FastF1 caches raw session data to `data/cache/` on first load, and the app reuses loaded sessions in-process so driver-selection changes stay fast.
 
 ## Deployment
 

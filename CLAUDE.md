@@ -63,8 +63,12 @@ When session type is `Q`, the UI exposes a qualifying phase dropdown (`All`, `Q1
 Telemetry, lap-number options, the right-hand lap-time sidebar, and Lap Times tab outputs are filtered to the selected phase.
 
 ### Lap Times Tab
-- Boxplot chart uses all valid laps for selected drivers (excluding pit in/out laps) with compound markers.
+- Boxplot chart uses all valid laps for selected drivers (excluding pit in/out laps) with compound markers and explicit median dots.
 - Summary table under the chart is computed from the exact same filtered lap set and reports per-driver/per-compound `Laps`, `q25`, `median`, and `q75`, ordered by the same driver sequence as the boxplot.
+
+### Telemetry Performance
+- `utils/f1_data.load_session()` is memoized in-process, so repeated driver/lap selections reuse the already loaded FastF1 session.
+- Telemetry charts use `lap.get_car_data().add_distance()` because the UI only needs `Distance`, `Speed`, `Throttle`, and `Brake`; avoid `get_telemetry()` unless merged channels are actually required.
 
 ### Driver Pills
 Selected driver pills are rendered as a darker fill with white text, without an extra outer box.
@@ -90,4 +94,4 @@ python -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
 python app.py   # runs on http://localhost:8050
 ```
-FastF1 caches session data to `data/cache/` on first load — subsequent loads are fast.
+FastF1 caches session data to `data/cache/` on first load, and the app reuses loaded sessions in-process for fast chart updates.
