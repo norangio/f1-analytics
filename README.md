@@ -61,6 +61,8 @@ The server script does:
 - `venv` + `pip install -r requirements.txt`
 - `systemctl restart f1-analytics`
 
+Production serves Dash with a small threaded Gunicorn pool (`2` workers, `4` threads each) so a slow FastF1 load does not stall the entire site behind one request.
+
 ### GitHub Actions Auto Deploy
 
 `.github/workflows/deploy.yml` deploys automatically on pushes to `main` (and supports manual runs).
