@@ -6,7 +6,7 @@ A Plotly Dash app serving real F1 telemetry data via the FastF1 Python SDK. Depl
 ## Stack
 - **Framework**: Plotly Dash (gunicorn, port 8003)
 - **Data**: FastF1 (disk-cached in `data/cache/`, gitignored)
-- **Styling**: Neutral light theme (white/gray surfaces with muted slate text)
+- **Styling**: Shared light/dark theme tokens with dark default and automatic `prefers-color-scheme` switching
 - **Deployment**: GitHub pull on VPS via `./deploy.sh` + `deploy/server-deploy.sh`
 
 ## Project Structure
@@ -30,6 +30,7 @@ utils/
   f1_data.py              # FastF1 loading helpers, telemetry + lap time extraction
   colors.py               # Team → color mapping, driver → team mapping
 assets/style.css          # Global CSS overrides (Dash dropdowns, pills, scrollbar)
+utils/theme.py            # Shared design tokens for Dash inline styles + Plotly figures
 deploy/
   f1-analytics.service    # systemd unit
   Caddyfile.snippet        # Caddy reverse proxy block
@@ -71,8 +72,12 @@ Telemetry, lap-number options, the right-hand lap-time sidebar, and Lap Times ta
 - `utils/f1_data.load_session()` is memoized in-process for the telemetry path, so repeated driver/lap selections reuse the already loaded FastF1 session.
 - Telemetry charts use `lap.get_car_data().add_distance()` because the UI only needs `Distance`, `Speed`, `Throttle`, and `Brake`; avoid `get_telemetry()` unless merged channels are actually required.
 
+### Theme System
+- The app defaults to dark mode and switches automatically to light mode when the browser/OS reports `prefers-color-scheme: light`.
+- Dash shell styles use CSS variables from `assets/style.css`; Plotly figures resolve matching light/dark colors through `utils/theme.py`.
+
 ### Driver Pills
-Selected driver pills are rendered as a darker fill with white text, without an extra outer box.
+Selected driver pills use restrained outlined chips with an accent-colored active state.
 `Select All` and `Clear` buttons are stateful and highlight when all or none are selected.
 
 ## Deployment
@@ -81,6 +86,7 @@ Selected driver pills are rendered as a darker fill with white text, without an 
 ```
 - Server: `root@5.78.109.38`, app lives at `/opt/f1-analytics`
 - Service port: 8003
+- Gunicorn runs with `2` workers and `4` threads per worker to avoid total site stalls when FastF1 requests are slow
 - Caddy handles TLS and reverse proxy for `f1.norangio.dev`
 - GitHub Actions auto-deploy: `.github/workflows/deploy.yml` on push to `main`
 - Required GitHub secrets: `VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`

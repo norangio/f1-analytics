@@ -1,125 +1,66 @@
 """Top-level Dash layout."""
 
 from dash import dcc, html
-from components.session_selector import session_selector
+
 from components.driver_selector import driver_selector
 from components.laptime_summary_table import laptime_summary_empty
-
-_TAB_STYLE = {
-    "padding": "10px 16px",
-    "fontSize": "12px",
-    "fontWeight": "600",
-    "letterSpacing": "0.04em",
-    "color": "#6B7280",
-    "border": "none",
-    "borderBottom": "2px solid transparent",
-    "backgroundColor": "#FFFFFF",
-    "fontFamily": "Inter, system-ui, -apple-system, sans-serif",
-    "cursor": "pointer",
-}
-_TAB_SELECTED_STYLE = {
-    **_TAB_STYLE,
-    "color": "#111827",
-    "borderBottom": "2px solid #111827",
-}
+from components.session_selector import session_selector
+from utils.theme import FONT_STACK
 
 
 def build_layout() -> html.Div:
     return html.Div(
+        className="theme-shell",
         style={
-            "backgroundColor": "#F3F4F6",
             "minHeight": "100vh",
-            "fontFamily": "Inter, system-ui, -apple-system, sans-serif",
-            "color": "#111827",
+            "fontFamily": FONT_STACK,
             "display": "flex",
             "flexDirection": "column",
         },
         children=[
-            # Header
             html.Div(
-                style={
-                    "backgroundColor": "#FFFFFF",
-                    "borderBottom": "1px solid #E5E7EB",
-                    "padding": "0 24px",
-                    "display": "flex",
-                    "alignItems": "center",
-                    "height": "52px",
-                    "gap": "12px",
-                },
+                className="surface-strip app-header",
                 children=[
-                    html.Span(
-                        "F1",
-                        style={
-                            "color": "#DC2626",
-                            "fontWeight": "900",
-                            "fontSize": "18px",
-                            "letterSpacing": "-0.02em",
-                        },
-                    ),
-                    html.Span(
-                        "Analytics",
-                        style={
-                            "color": "#111827",
-                            "fontWeight": "400",
-                            "fontSize": "18px",
-                            "letterSpacing": "0.02em",
-                        },
-                    ),
+                    html.Span("F1", className="app-brand-mark"),
+                    html.Span("Analytics", className="app-brand-name"),
                     html.Div(style={"flex": "1"}),
                     html.Span(
                         id="session-title",
-                        style={"color": "#6B7280", "fontSize": "13px"},
+                        className="app-session-title",
+                        style={"fontSize": "13px"},
                     ),
                 ],
             ),
-
-            # Controls bar
             session_selector(),
             driver_selector(),
-
-            # Tab bar
             dcc.Tabs(
                 id="main-tabs",
                 value="telemetry",
+                parent_className="tab-parent",
+                className="surface-strip app-tabs",
+                content_className="tab-content",
                 children=[
                     dcc.Tab(
                         label="Telemetry",
                         value="telemetry",
-                        style=_TAB_STYLE,
-                        selected_style=_TAB_SELECTED_STYLE,
+                        className="app-tab",
+                        selected_className="app-tab app-tab--selected",
                     ),
                     dcc.Tab(
                         label="Lap Times",
                         value="laptimes",
-                        style=_TAB_STYLE,
-                        selected_style=_TAB_SELECTED_STYLE,
+                        className="app-tab",
+                        selected_className="app-tab app-tab--selected",
                     ),
                 ],
-                style={
-                    "backgroundColor": "#FFFFFF",
-                    "borderBottom": "1px solid #E5E7EB",
-                    "padding": "0 24px",
-                    "height": "40px",
-                },
-                colors={
-                    "border": "transparent",
-                    "primary": "#111827",
-                    "background": "#FFFFFF",
-                },
             ),
-
-            # Telemetry content (existing)
             html.Div(
                 id="telemetry-content",
-                style={
-                    "display": "flex",
-                    "gap": "0",
-                    "flex": "1",
-                },
+                className="telemetry-layout",
+                style={"display": "flex", "flex": "1"},
                 children=[
-                    # Charts area
                     html.Div(
-                        style={"flex": "1", "padding": "20px 24px", "minWidth": "0"},
+                        className="surface-card telemetry-main",
                         children=[
                             dcc.Graph(
                                 id="telemetry-graph",
@@ -133,81 +74,56 @@ def build_layout() -> html.Div:
                             ),
                         ],
                     ),
-
-                    # Sidebar
                     html.Div(
-                        style={
-                            "width": "280px",
-                            "flexShrink": "0",
-                            "borderLeft": "1px solid #E5E7EB",
-                            "backgroundColor": "#FFFFFF",
-                            "padding": "16px 12px",
-                        },
+                        className="surface-card telemetry-sidebar",
                         children=[
-                            html.Div(
-                                "Lap Times",
-                                style={
-                                    "fontSize": "11px",
-                                    "fontWeight": "600",
-                                    "letterSpacing": "0.08em",
-                                    "textTransform": "uppercase",
-                                    "color": "#6B7280",
-                                    "marginBottom": "12px",
-                                    "paddingLeft": "4px",
-                                },
-                            ),
+                            html.Div("Lap Times", className="section-label", style={"marginBottom": "12px", "paddingLeft": "4px"}),
                             html.Div(id="lap-times-sidebar"),
                         ],
                     ),
                 ],
             ),
-
-            # Lap Times content (new)
             html.Div(
                 id="laptimes-content",
+                className="laptimes-layout",
                 style={"display": "none"},
                 children=[
                     html.Div(
-                        style={
-                            "display": "flex",
-                            "justifyContent": "flex-end",
-                            "marginBottom": "8px",
-                        },
+                        className="toggle-row",
                         children=[
                             dcc.Checklist(
                                 id="laptime-robust-axis-toggle",
                                 options=[{"label": "Robust y-axis (5-95%)", "value": "robust"}],
                                 value=["robust"],
-                                labelStyle={"fontSize": "12px", "color": "#4B5563", "cursor": "pointer"},
-                                inputStyle={"marginRight": "6px"},
+                                className="robust-axis-toggle",
+                                labelStyle={"display": "inline-flex", "alignItems": "center"},
                             ),
                         ],
                     ),
-                    dcc.Graph(
-                        id="laptime-boxplot-graph",
-                        config={
-                            "displayModeBar": True,
-                            "modeBarButtonsToRemove": ["select2d", "lasso2d", "autoScale2d"],
-                            "displaylogo": False,
-                            "responsive": True,
-                        },
-                        style={"width": "100%"},
+                    html.Div(
+                        className="surface-card chart-card",
+                        children=[
+                            dcc.Graph(
+                                id="laptime-boxplot-graph",
+                                config={
+                                    "displayModeBar": True,
+                                    "modeBarButtonsToRemove": ["select2d", "lasso2d", "autoScale2d"],
+                                    "displaylogo": False,
+                                    "responsive": True,
+                                },
+                                style={"width": "100%"},
+                            ),
+                        ],
                     ),
                     html.Div(
                         id="laptime-summary-table",
-                        style={
-                            "marginTop": "10px",
-                            "padding": "10px 12px",
-                            "backgroundColor": "#FFFFFF",
-                            "border": "1px solid #E5E7EB",
-                            "borderRadius": "8px",
-                        },
+                        className="surface-card summary-card",
                         children=laptime_summary_empty(),
                     ),
                 ],
             ),
-
-            # Hidden stores
+            dcc.Store(id="theme-store", data="dark"),
+            dcc.Interval(id="theme-sync-interval", interval=1000, n_intervals=0),
             dcc.Store(id="driver-colors-store"),
             dcc.Store(id="session-data-store"),
         ],

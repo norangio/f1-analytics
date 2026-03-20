@@ -11,12 +11,12 @@ Live at [f1.norangio.dev](https://f1.norangio.dev)
 - **Lap selection** — compare either each driver's fastest lap (default) or a specific lap number from the selected session
 - **Telemetry charts** — speed, throttle, and brake traces per driver, synchronized on lap distance and backed by cached FastF1 session/car data
 - **Lap-time boxplots** — per-driver lap-time distribution with tire compound markers and median dots
-- **Driver/compound summary table** — for the current Lap Times selection, shows per-driver/per-compound lap count + `q25`/`median`/`q75`
-- **Neutral light UI** — white/gray app surfaces with high-contrast text for day-to-day readability
+- **Driver summary table** — for the current Lap Times selection, shows per-driver lap count + `Best`/`q25`/`median`/`q75`
+- **Automatic light/dark theme** — dark mode by default, with light mode applied automatically via `prefers-color-scheme`
 - **Sector markers** — vertical bands showing S1/S2/S3 boundaries
 - **Lap time sidebar** — fastest lap + sector times per driver, sorted fastest to slowest and filtered by qualifying phase when applicable
 - **Team colors + teammate styling** — traces are team-colored, and when both teammates are selected one trace renders dotted for clarity
-- **Driver pill styling** — selected drivers use a darker filled pill with white text and no extra outer box
+- **Driver pill styling** — selected drivers keep team colors in charts while the picker uses restrained outline pills with blue active state
 - **Driver action states** — `Select All` and `Clear` buttons visibly show active state based on current selection
 
 ## Stack

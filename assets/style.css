@@ -1,73 +1,309 @@
-/* F1 Analytics — neutral light theme */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap');
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap');
+:root {
+  color-scheme: dark;
+  --bg-base: #0F1117;
+  --bg-surface: #1A1F2E;
+  --bg-surface-hover: #1E2536;
+  --border: #252D3D;
+  --accent: #3B82F6;
+  --accent-dim: #1D4ED8;
+  --text-primary: #F1F5F9;
+  --text-muted: #64748B;
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --radius-card: 8px;
+  --radius-pill: 4px;
+  --font-sans: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
 
-*, *::before, *::after {
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg-base: #F8FAFC;
+    --bg-surface: #FFFFFF;
+    --bg-surface-hover: #F1F5F9;
+    --border: #E2E8F0;
+    --accent: #2563EB;
+    --accent-dim: #1D4ED8;
+    --text-primary: #0F172A;
+    --text-muted: #64748B;
+    --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
-  background-color: #F3F4F6;
-  color: #111827;
-  font-family: Inter, system-ui, -apple-system, sans-serif;
+  min-height: 100%;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
 }
 
-/* Dash dropdown overrides */
+body {
+  min-height: 100vh;
+}
+
+a {
+  color: var(--accent);
+}
+
+.theme-shell {
+  min-height: 100vh;
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+}
+
+.surface-strip {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.surface-card {
+  position: relative;
+  overflow: hidden;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-subtle);
+  transition: background-color 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.surface-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 3px;
+  background-color: var(--accent);
+  opacity: 0;
+  transition: opacity 0.16s ease;
+}
+
+.surface-card:hover {
+  background-color: var(--bg-surface-hover);
+}
+
+.surface-card:hover::before {
+  opacity: 1;
+}
+
+.app-header {
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 56px;
+}
+
+.app-brand-mark {
+  color: var(--accent);
+  font-weight: 900;
+  font-size: 18px;
+  letter-spacing: -0.02em;
+}
+
+.app-brand-name {
+  color: var(--text-primary);
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: 0.02em;
+}
+
+.app-session-title,
+.status-text,
+.muted-copy {
+  color: var(--text-muted);
+}
+
+.session-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: flex-end;
+  padding: 16px 24px;
+}
+
+.driver-selector {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 24px;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.tab-parent {
+  flex-direction: row !important;
+}
+
+.tab-container {
+  flex-direction: row !important;
+  border-bottom: none !important;
+  gap: 4px;
+}
+
+.tab-container .tab {
+  flex: none !important;
+}
+
+.tab-content {
+  display: none !important;
+}
+
+.app-tabs {
+  padding: 0 24px;
+  min-height: 44px;
+  display: flex;
+  align-items: flex-end;
+}
+
+.app-tab {
+  padding: 10px 16px !important;
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 2px solid transparent !important;
+  color: var(--text-muted) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  cursor: pointer !important;
+}
+
+.app-tab:hover {
+  color: var(--accent) !important;
+}
+
+.app-tab--selected {
+  color: var(--text-primary) !important;
+  border-bottom-color: var(--accent) !important;
+}
+
+.telemetry-layout {
+  display: flex;
+  gap: 16px;
+  flex: 1;
+  padding: 20px 24px 24px;
+}
+
+.telemetry-main,
+.chart-card {
+  min-width: 0;
+  padding: 14px 16px 8px;
+}
+
+.telemetry-main {
+  flex: 1;
+}
+
+.telemetry-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  padding: 16px 12px;
+}
+
+.laptimes-layout {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 16px;
+  padding: 20px 24px 24px;
+}
+
+.toggle-row {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.summary-card {
+  padding: 14px 16px;
+}
+
+.summary-heading {
+  margin-bottom: 10px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
 .f1-dropdown .Select-control {
-  background-color: #FFFFFF !important;
-  border-color: #D1D5DB !important;
-  border-radius: 6px !important;
-  color: #111827 !important;
-  min-height: 36px !important;
+  min-height: 38px !important;
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-card) !important;
   box-shadow: none !important;
+  color: var(--text-primary) !important;
 }
 
 .f1-dropdown .Select-value-label,
 .f1-dropdown .Select-placeholder {
-  color: #374151 !important;
+  color: var(--text-muted) !important;
   font-size: 13px !important;
 }
 
+.f1-dropdown .Select-value-label {
+  color: var(--text-primary) !important;
+}
+
+.f1-dropdown .Select-input > input {
+  color: var(--text-primary) !important;
+}
+
 .f1-dropdown .Select-arrow {
-  border-top-color: #6B7280 !important;
+  border-top-color: var(--text-muted) !important;
 }
 
 .f1-dropdown.is-focused .Select-control,
 .f1-dropdown .Select-control:hover {
-  border-color: #6B7280 !important;
-  box-shadow: none !important;
+  background-color: var(--bg-surface-hover) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 1px var(--accent) !important;
 }
 
 .f1-dropdown .Select-menu-outer {
-  background-color: #FFFFFF !important;
-  border-color: #D1D5DB !important;
-  border-radius: 6px !important;
-  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12) !important;
   z-index: 100 !important;
+  background-color: var(--bg-surface) !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-card) !important;
+  box-shadow: var(--shadow-subtle) !important;
 }
 
 .f1-dropdown .Select-option {
-  background-color: #FFFFFF !important;
-  color: #374151 !important;
-  font-size: 13px !important;
   padding: 8px 12px !important;
+  background-color: var(--bg-surface) !important;
+  color: var(--text-muted) !important;
+  font-size: 13px !important;
 }
 
 .f1-dropdown .Select-option.is-focused {
-  background-color: #F3F4F6 !important;
-  color: #111827 !important;
+  background-color: var(--bg-surface-hover) !important;
+  color: var(--text-primary) !important;
 }
 
 .f1-dropdown .Select-option.is-selected {
-  background-color: #E5E7EB !important;
-  color: #111827 !important;
+  background-color: var(--bg-surface-hover) !important;
+  color: var(--accent) !important;
+  box-shadow: inset 3px 0 0 var(--accent);
   font-weight: 600 !important;
 }
 
-/* Driver checklist pills */
 .driver-checklist input[type="checkbox"] {
   position: absolute !important;
   opacity: 0 !important;
@@ -78,20 +314,19 @@ html, body {
 }
 
 .driver-checklist label {
+  display: inline-flex !important;
+  align-items: center;
   padding: 4px 11px !important;
-  border-radius: 20px !important;
-  border: 1.5px solid #D1D5DB !important;
-  background-color: #F9FAFB !important;
-  color: #374151 !important;
+  border: 1px solid var(--border) !important;
+  border-radius: var(--radius-pill) !important;
+  background: transparent !important;
+  color: var(--text-muted) !important;
   font-size: 11px !important;
   font-weight: 600 !important;
   letter-spacing: 0.04em;
-  display: inline-flex !important;
-  align-items: center;
-  gap: 0;
   cursor: pointer;
   user-select: none;
-  transition: border-color 0.12s, background-color 0.12s, color 0.12s;
+  transition: border-color 0.12s ease, color 0.12s ease, background-color 0.12s ease, box-shadow 0.12s ease;
 }
 
 .driver-checklist label > span {
@@ -111,77 +346,147 @@ html, body {
 }
 
 .driver-checklist label:hover {
-  background-color: #F3F4F6 !important;
-  border-color: #6B7280 !important;
+  background-color: var(--bg-surface-hover) !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
 }
 
-/* Selected pill — darken entire pill with no outer box */
 .driver-checklist label:has(input:checked) {
-  background-color: #111827 !important;
-  color: #F9FAFB !important;
-  border-color: #111827 !important;
-  font-weight: 700 !important;
+  background: transparent !important;
+  border-color: var(--accent) !important;
+  color: var(--accent) !important;
+  box-shadow: inset 0 0 0 1px var(--accent);
 }
 
-/* Button hover states */
-button:hover {
-  opacity: 0.8;
+.primary-button,
+.ghost-pill-button {
+  transition: background-color 0.12s ease, border-color 0.12s ease, color 0.12s ease, box-shadow 0.12s ease;
 }
 
-/* Plotly modebar */
+.primary-button {
+  height: 38px;
+  padding: 8px 18px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-card);
+  background-color: var(--accent);
+  box-shadow: var(--shadow-subtle);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.primary-button:hover {
+  background-color: var(--accent-dim);
+  border-color: var(--accent-dim);
+}
+
+.ghost-pill-button {
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.ghost-pill-button:hover,
+.ghost-pill-button--active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: transparent;
+}
+
+.ghost-pill-button--active {
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.primary-button:focus-visible,
+.ghost-pill-button:focus-visible,
+.driver-checklist label:focus-within {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.robust-axis-toggle {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.robust-axis-toggle label {
+  cursor: pointer;
+}
+
+.robust-axis-toggle input {
+  margin-right: 6px;
+  accent-color: var(--accent);
+}
+
 .modebar {
   background-color: transparent !important;
 }
 
+.modebar-group {
+  background-color: transparent !important;
+}
+
 .modebar-btn path {
-  fill: #6B7280 !important;
+  fill: var(--text-muted) !important;
 }
 
 .modebar-btn:hover path {
-  fill: #111827 !important;
+  fill: var(--accent) !important;
 }
 
-/* Scrollbar styling */
+.dash-graph {
+  border: none;
+  border-radius: 0;
+  overflow: visible;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #F3F4F6;
+  background: var(--bg-base);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #D1D5DB;
+  background: var(--border);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9CA3AF;
+  background: var(--text-muted);
 }
 
-/* Tab overrides — Dash defaults to vertical flex */
-.tab-parent {
-  flex-direction: row !important;
+@media (max-width: 960px) {
+  .telemetry-layout {
+    flex-direction: column;
+  }
+
+  .telemetry-sidebar {
+    width: 100%;
+  }
 }
 
-.tab-container {
-  flex-direction: row !important;
-  border-bottom: none !important;
-}
+@media (max-width: 720px) {
+  .app-header,
+  .session-controls,
+  .driver-selector,
+  .app-tabs,
+  .telemetry-layout,
+  .laptimes-layout {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
 
-.tab-container .tab {
-  flex: none !important;
-}
-
-/* Hide Dash's built-in tab content panel (we manage content visibility ourselves) */
-.tab-content {
-  display: none !important;
-}
-
-/* Graph container */
-.dash-graph {
-  border-radius: 8px;
-  overflow: hidden;
-  border: 1px solid #E5E7EB;
+  .toggle-row {
+    justify-content: flex-start;
+  }
 }

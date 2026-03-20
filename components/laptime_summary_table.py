@@ -4,6 +4,7 @@ import pandas as pd
 from dash import html
 
 from components.laptime_boxplot import get_sorted_drivers_by_median
+from utils.theme import BORDER, TEXT_MUTED, TEXT_PRIMARY
 
 
 def laptime_summary_empty(
@@ -14,7 +15,7 @@ def laptime_summary_empty(
         style={
             "padding": "10px 2px",
             "fontSize": "13px",
-            "color": "#6B7280",
+            "color": TEXT_MUTED,
         },
     )
 
@@ -64,24 +65,14 @@ def build_laptime_summary_table(
 
         rows.append(
             html.Tr(
-                style={"borderBottom": "1px solid #E5E7EB"},
+                style={"borderBottom": f"1px solid {BORDER}"},
                 children=cells,
             )
         )
 
     return html.Div(
         children=[
-            html.Div(
-                "Lap-Time Summary",
-                style={
-                    "fontSize": "12px",
-                    "fontWeight": "700",
-                    "letterSpacing": "0.06em",
-                    "textTransform": "uppercase",
-                    "color": "#4B5563",
-                    "marginBottom": "10px",
-                },
-            ),
+            html.Div("Lap-Time Summary", className="summary-heading"),
             html.Table(
                 style={"width": "100%", "borderCollapse": "collapse"},
                 children=[
@@ -114,10 +105,10 @@ def _th_style(align: str) -> dict:
         "fontWeight": "700",
         "letterSpacing": "0.08em",
         "textTransform": "uppercase",
-        "color": "#6B7280",
+        "color": TEXT_MUTED,
         "padding": "8px 10px",
         "textAlign": align,
-        "borderBottom": "1px solid #D1D5DB",
+        "borderBottom": f"1px solid {BORDER}",
         "whiteSpace": "nowrap",
     }
 
@@ -126,7 +117,7 @@ def _td_style(align: str, bold: bool = False) -> dict:
     return {
         "fontSize": "12px",
         "fontFamily": "monospace",
-        "color": "#111827" if bold else "#4B5563",
+        "color": TEXT_PRIMARY if bold else TEXT_MUTED,
         "fontWeight": "700" if bold else "500",
         "padding": "8px 10px",
         "textAlign": align,

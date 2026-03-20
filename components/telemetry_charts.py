@@ -4,12 +4,7 @@ import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 
-BG_COLOR = "#FFFFFF"
-PAPER_COLOR = "#F8FAFC"
-GRID_COLOR = "rgba(148, 163, 184, 0.22)"
-AXIS_COLOR = "#D1D5DB"
-TEXT_COLOR = "#4B5563"
-SECTOR_LINE_COLOR = "rgba(107, 114, 128, 0.22)"
+from utils.theme import FONT_STACK, resolve_plot_theme
 
 
 def build_telemetry_figure(
@@ -17,10 +12,9 @@ def build_telemetry_figure(
     driver_colors: dict[str, str],
     sector_distances: tuple[float | None, float | None] = (None, None),
     driver_line_styles: dict[str, str] | None = None,
+    theme_name: str | None = None,
 ) -> go.Figure:
-    """
-    Build stacked Speed / Throttle / Brake subplots sharing x-axis (Distance).
-    """
+    """Build stacked Speed / Throttle / Brake subplots sharing x-axis (Distance)."""
     fig = make_subplots(
         rows=3,
         cols=1,
@@ -30,11 +24,12 @@ def build_telemetry_figure(
         subplot_titles=["Speed (km/h)", "Throttle (%)", "Brake"],
     )
 
+    theme = resolve_plot_theme(theme_name)
+
     for driver, tel in telemetry_data.items():
-        color = driver_colors.get(driver, "#FFFFFF")
+        color = driver_colors.get(driver, theme["text_primary"])
         line_style = (driver_line_styles or {}).get(driver, "solid")
 
-        # Speed
         fig.add_trace(
             go.Scatter(
                 x=tel["Distance"],
@@ -49,7 +44,6 @@ def build_telemetry_figure(
             col=1,
         )
 
-        # Throttle
         fig.add_trace(
             go.Scatter(
                 x=tel["Distance"],
@@ -65,7 +59,6 @@ def build_telemetry_figure(
             col=1,
         )
 
-        # Brake — render as a filled area (0 or 100)
         brake_y = tel["Brake"].astype(float) * 100
         fig.add_trace(
             go.Scatter(
@@ -75,7 +68,11 @@ def build_telemetry_figure(
                 fill="tozeroy",
                 name=driver,
                 line={"color": color, "width": 0.8, "dash": line_style},
-                fillcolor=color.replace(")", ", 0.25)").replace("rgb", "rgba") if color.startswith("rgb") else _hex_to_rgba(color, 0.2),
+                fillcolor=(
+                    color.replace(")", ", 0.25)").replace("rgb", "rgba")
+                    if color.startswith("rgb")
+                    else _hex_to_rgba(color, 0.2)
+                ),
                 legendgroup=driver,
                 showlegend=False,
                 hovertemplate=f"<b>{driver}</b><br>%{{x:.0f}} m<br>Brake: %{{y:.0f}}%<extra></extra>",
@@ -84,7 +81,6 @@ def build_telemetry_figure(
             col=1,
         )
 
-    # Sector boundary lines
     s1_dist, s2_dist = sector_distances
     for dist in [s1_dist, s2_dist]:
         if dist is not None:
@@ -93,36 +89,36 @@ def build_telemetry_figure(
                     x=dist,
                     line_width=1,
                     line_dash="dash",
-                    line_color=SECTOR_LINE_COLOR,
+                    line_color=theme["sector_line"],
                     row=row,
                     col=1,
                 )
 
-    _apply_chart_theme(fig)
+    _apply_chart_theme(fig, theme)
     return fig
 
 
-def _apply_chart_theme(fig: go.Figure) -> None:
+def _apply_chart_theme(fig: go.Figure, theme: dict[str, str]) -> None:
     axis_defaults = {
-        "gridcolor": GRID_COLOR,
+        "gridcolor": theme["grid"],
         "gridwidth": 1,
-        "linecolor": AXIS_COLOR,
-        "tickcolor": AXIS_COLOR,
-        "tickfont": {"color": TEXT_COLOR, "size": 11},
+        "linecolor": theme["axis"],
+        "tickcolor": theme["axis"],
+        "tickfont": {"color": theme["text"], "size": 11},
         "zeroline": False,
         "showgrid": True,
     }
 
     fig.update_layout(
-        paper_bgcolor=PAPER_COLOR,
-        plot_bgcolor=BG_COLOR,
-        font={"color": TEXT_COLOR, "family": "Inter, system-ui, sans-serif"},
+        paper_bgcolor=theme["paper_bg"],
+        plot_bgcolor=theme["plot_bg"],
+        font={"color": theme["text"], "family": FONT_STACK},
         margin={"l": 55, "r": 20, "t": 32, "b": 40},
         hovermode="x unified",
         hoverlabel={
-            "bgcolor": "#FFFFFF",
-            "bordercolor": "#D1D5DB",
-            "font": {"color": "#111827", "size": 12},
+            "bgcolor": theme["hover_bg"],
+            "bordercolor": theme["hover_border"],
+            "font": {"color": theme["text_primary"], "size": 12},
         },
         legend={
             "orientation": "h",
@@ -130,39 +126,36 @@ def _apply_chart_theme(fig: go.Figure) -> None:
             "y": 1.02,
             "xanchor": "left",
             "x": 0,
-            "font": {"size": 12, "color": "#374151"},
+            "font": {"size": 12, "color": theme["text_primary"]},
             "bgcolor": "rgba(0,0,0,0)",
         },
         height=520,
         dragmode="zoom",
     )
 
-    for i in range(1, 4):
-        xref = f"x{i if i > 1 else ''} axis"
-        yref = f"y{i if i > 1 else ''} axis"
+    for row in range(1, 4):
+        fig.update_xaxes(row=row, col=1, **axis_defaults)
+        fig.update_yaxes(row=row, col=1, **axis_defaults)
 
-        fig.update_xaxes(row=i, col=1, **axis_defaults)
-        fig.update_yaxes(row=i, col=1, **axis_defaults)
-
-    # x-axis label only on bottom
-    fig.update_xaxes(row=3, col=1, title_text="Distance (m)", title_font={"size": 11, "color": TEXT_COLOR})
-    # Throttle y fixed range
+    fig.update_xaxes(row=3, col=1, title_text="Distance (m)", title_font={"size": 11, "color": theme["text"]})
     fig.update_yaxes(row=2, col=1, range=[0, 105])
-    # Brake y fixed range
     fig.update_yaxes(row=3, col=1, range=[0, 110], title_text="")
 
-    # Subplot titles styling
     for annotation in fig.layout.annotations:
-        annotation.font = {"size": 11, "color": TEXT_COLOR}
+        annotation.font = {"size": 11, "color": theme["text"]}
         annotation.x = 0
         annotation.xanchor = "left"
 
 
-def empty_telemetry_figure(message: str = "Select a session and drivers to view telemetry") -> go.Figure:
+def empty_telemetry_figure(
+    message: str = "Select a session and drivers to view telemetry",
+    theme_name: str | None = None,
+) -> go.Figure:
+    theme = resolve_plot_theme(theme_name)
     fig = go.Figure()
     fig.update_layout(
-        paper_bgcolor=BG_COLOR,
-        plot_bgcolor=BG_COLOR,
+        paper_bgcolor=theme["paper_bg"],
+        plot_bgcolor=theme["plot_bg"],
         margin={"l": 55, "r": 20, "t": 32, "b": 40},
         height=520,
         annotations=[
@@ -173,7 +166,7 @@ def empty_telemetry_figure(message: str = "Select a session and drivers to view 
                 "x": 0.5,
                 "y": 0.5,
                 "showarrow": False,
-                "font": {"color": "#6B7280", "size": 14},
+                "font": {"color": theme["text"], "size": 14},
             }
         ],
         xaxis={"visible": False},

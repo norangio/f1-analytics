@@ -13,12 +13,11 @@ from components.laptime_summary_table import build_laptime_summary_table, laptim
 
 TELEMETRY_CONTENT_STYLE = {
     "display": "flex",
-    "gap": "0",
     "flex": "1",
 }
 LAPTIMES_CONTENT_STYLE = {
+    "display": "flex",
     "flex": "1",
-    "padding": "20px 24px",
 }
 
 
@@ -33,8 +32,25 @@ def switch_tab(tab):
     return {"display": "none"}, LAPTIMES_CONTENT_STYLE
 
 
+# Keep the theme store aligned with the OS-level preferred color scheme.
+clientside_callback(
+    """
+    function(n, currentTheme) {
+        const nextTheme = window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+        if (currentTheme === nextTheme) {
+            return window.dash_clientside.no_update;
+        }
+        return nextTheme;
+    }
+    """,
+    Output("theme-store", "data"),
+    Input("theme-sync-interval", "n_intervals"),
+    State("theme-store", "data"),
+)
+
+
 # Trigger Plotly resize after tab content becomes visible
-app.clientside_callback(
+clientside_callback(
     """
     function(tab) {
         if (tab === 'laptimes') {
@@ -59,13 +75,24 @@ app.clientside_callback(
     Input("lap-mode-dropdown", "value"),
     Input("lap-number-dropdown", "value"),
     Input("laptime-robust-axis-toggle", "value"),
+    Input("theme-store", "data"),
     State("session-store", "data"),
     State("driver-colors-store", "data"),
     prevent_initial_call=True,
 )
-def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, lap_number, robust_axis_toggle, session_data, driver_colors):
+def update_laptime_boxplot(
+    tab,
+    selected_drivers,
+    qualifying_phase,
+    lap_mode,
+    lap_number,
+    robust_axis_toggle,
+    theme_name,
+    session_data,
+    driver_colors,
+):
     if tab != "laptimes" or not selected_drivers or session_data is None:
-        return empty_boxplot_figure(), laptime_summary_empty()
+        return empty_boxplot_figure(theme_name=theme_name), laptime_summary_empty()
 
     year = session_data["year"]
     round_number = session_data["round"]
@@ -85,19 +112,25 @@ def update_laptime_boxplot(tab, selected_drivers, qualifying_phase, lap_mode, la
 
         if lap_data.empty:
             return (
-                empty_boxplot_figure("No lap time data available for selected drivers"),
+                empty_boxplot_figure("No lap time data available for selected drivers", theme_name=theme_name),
                 laptime_summary_empty("No lap-time samples available for this selection."),
             )
 
         driver_order = get_sorted_drivers_by_median(lap_data)
         robust_axis = "robust" in (robust_axis_toggle or [])
         return (
-            build_laptime_boxplot(lap_data, colors, driver_order=driver_order, robust_axis=robust_axis),
+            build_laptime_boxplot(
+                lap_data,
+                colors,
+                driver_order=driver_order,
+                robust_axis=robust_axis,
+                theme_name=theme_name,
+            ),
             build_laptime_summary_table(lap_data, driver_order=driver_order),
         )
 
     except Exception as e:
         return (
-            empty_boxplot_figure(f"Error loading lap times: {str(e)[:80]}"),
+            empty_boxplot_figure(f"Error loading lap times: {str(e)[:80]}", theme_name=theme_name),
             laptime_summary_empty("Error loading lap-time summary."),
         )

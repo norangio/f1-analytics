@@ -20,22 +20,8 @@ QUALIFYING_PHASE_CONTROL_STYLE = {
     "gap": "4px",
     "minWidth": "120px",
 }
-DRIVER_ACTION_BUTTON_BASE_STYLE = {
-    "background": "none",
-    "border": "1px solid #D1D5DB",
-    "borderRadius": "4px",
-    "color": "#6B7280",
-    "fontSize": "11px",
-    "padding": "4px 10px",
-    "cursor": "pointer",
-}
-DRIVER_ACTION_BUTTON_ACTIVE_STYLE = {
-    **DRIVER_ACTION_BUTTON_BASE_STYLE,
-    "backgroundColor": "#111827",
-    "border": "1px solid #111827",
-    "color": "#F9FAFB",
-    "fontWeight": "700",
-}
+DRIVER_ACTION_BUTTON_BASE_CLASS = "ghost-pill-button"
+DRIVER_ACTION_BUTTON_ACTIVE_CLASS = "ghost-pill-button ghost-pill-button--active"
 
 
 @app.callback(
@@ -194,20 +180,20 @@ def handle_select_all_clear(select_all, clear, options):
 
 
 @app.callback(
-    Output("select-all-drivers-btn", "style"),
-    Output("clear-drivers-btn", "style"),
+    Output("select-all-drivers-btn", "className"),
+    Output("clear-drivers-btn", "className"),
     Input("driver-checklist", "value"),
     State("driver-checklist", "options"),
 )
 def update_driver_action_button_styles(selected_values, options):
     if not options:
-        return DRIVER_ACTION_BUTTON_BASE_STYLE, DRIVER_ACTION_BUTTON_BASE_STYLE
+        return DRIVER_ACTION_BUTTON_BASE_CLASS, DRIVER_ACTION_BUTTON_BASE_CLASS
 
     selected = set(selected_values or [])
     all_values = {option["value"] for option in options}
     all_selected = bool(all_values) and selected == all_values
     none_selected = not selected
 
-    select_style = DRIVER_ACTION_BUTTON_ACTIVE_STYLE if all_selected else DRIVER_ACTION_BUTTON_BASE_STYLE
-    clear_style = DRIVER_ACTION_BUTTON_ACTIVE_STYLE if none_selected else DRIVER_ACTION_BUTTON_BASE_STYLE
-    return select_style, clear_style
+    select_class = DRIVER_ACTION_BUTTON_ACTIVE_CLASS if all_selected else DRIVER_ACTION_BUTTON_BASE_CLASS
+    clear_class = DRIVER_ACTION_BUTTON_ACTIVE_CLASS if none_selected else DRIVER_ACTION_BUTTON_BASE_CLASS
+    return select_class, clear_class

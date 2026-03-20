@@ -14,15 +14,16 @@ from components.telemetry_charts import build_telemetry_figure, empty_telemetry_
     Input("qualifying-phase-dropdown", "value"),
     Input("lap-mode-dropdown", "value"),
     Input("lap-number-dropdown", "value"),
+    Input("theme-store", "data"),
     State("session-store", "data"),
     State("driver-colors-store", "data"),
     prevent_initial_call=True,
 )
-def update_telemetry_chart(selected_drivers, qualifying_phase, lap_mode, lap_number, session_data, driver_colors):
+def update_telemetry_chart(selected_drivers, qualifying_phase, lap_mode, lap_number, theme_name, session_data, driver_colors):
     if not selected_drivers or session_data is None:
-        return empty_telemetry_figure()
+        return empty_telemetry_figure(theme_name=theme_name)
     if lap_mode == "specific" and lap_number is None:
-        return empty_telemetry_figure("No valid lap numbers available for this session")
+        return empty_telemetry_figure("No valid lap numbers available for this session", theme_name=theme_name)
 
     year = session_data["year"]
     round_number = session_data["round"]
@@ -43,8 +44,8 @@ def update_telemetry_chart(selected_drivers, qualifying_phase, lap_mode, lap_num
 
         if not telemetry_data:
             if lap_mode == "specific":
-                return empty_telemetry_figure("No telemetry for selected drivers on this lap")
-            return empty_telemetry_figure("No telemetry data available for selected drivers")
+                return empty_telemetry_figure("No telemetry for selected drivers on this lap", theme_name=theme_name)
+            return empty_telemetry_figure("No telemetry data available for selected drivers", theme_name=theme_name)
 
         # Get sector distances using first available driver
         first_driver = next(iter(telemetry_data))
@@ -54,7 +55,7 @@ def update_telemetry_chart(selected_drivers, qualifying_phase, lap_mode, lap_num
             qualifying_phase=qualifying_phase or "all",
         )
 
-        return build_telemetry_figure(telemetry_data, colors, sector_distances, line_styles)
+        return build_telemetry_figure(telemetry_data, colors, sector_distances, line_styles, theme_name=theme_name)
 
     except Exception as e:
-        return empty_telemetry_figure(f"Error loading telemetry: {str(e)[:80]}")
+        return empty_telemetry_figure(f"Error loading telemetry: {str(e)[:80]}", theme_name=theme_name)
