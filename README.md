@@ -13,6 +13,7 @@ Live at [f1.norangio.dev](https://f1.norangio.dev)
 - **Lap-time boxplots** — per-driver lap-time distribution with tire compound markers and median dots
 - **Driver summary table** — for the current Lap Times selection, shows per-driver lap count + `Best`/`q25`/`median`/`q75`
 - **Automatic light/dark theme** — dark mode by default, with light mode applied automatically via `prefers-color-scheme`
+- **Instant default race list** — the current season's race dropdown is bundled locally so first load does not wait on FastF1 schedule lookups
 - **Sector markers** — vertical bands showing S1/S2/S3 boundaries
 - **Lap time sidebar** — fastest lap + sector times per driver, sorted fastest to slowest and filtered by qualifying phase when applicable
 - **Team colors + teammate styling** — traces are team-colored, and when both teammates are selected one trace renders dotted for clarity
@@ -34,6 +35,7 @@ python app.py
 ```
 
 App runs at `http://localhost:8050`. FastF1 caches raw session data to `data/cache/` on first load, the app uses a lighter laps-only session load for the initial view, and full telemetry is loaded only when the telemetry chart needs it.
+The default season race list is also bundled in-app as a fallback so the first paint can show race options immediately.
 
 ## Deployment
 

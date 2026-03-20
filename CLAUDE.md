@@ -47,6 +47,7 @@ The Dash app instance lives in `dash_app.py` only. `app.py` imports from it, and
 - `session.drivers` returns a **frozenset of car number strings** (e.g. `{'11', '44', '63'}`), NOT abbreviations
 - Always use `session.results["Abbreviation"]` and `session.results["DriverNumber"]` to get driver abbreviations and numbers
 - `get_drivers_in_session()` and `get_driver_numbers()` in `utils/f1_data.py` handle this correctly
+- `get_event_schedule()` serves a bundled 2026 season fallback first so the default race dropdown is instant even when FastF1 schedule lookups are slow
 
 ### Driver Colors
 Colors are team-based, keyed by 3-letter abbreviation. See `utils/colors.py`. The `DRIVER_TEAM` dict covers 2025 + 2026 grid plus legacy drivers.

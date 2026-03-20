@@ -2,7 +2,12 @@
 
 from dash import dcc, html
 
-from utils.f1_data import QUALIFYING_PHASES, SESSION_TYPES, SUPPORTED_YEARS
+from utils.f1_data import (
+    QUALIFYING_PHASES,
+    SESSION_TYPES,
+    SUPPORTED_YEARS,
+    get_event_schedule,
+)
 from utils.theme import SECTION_LABEL_STYLE
 
 CONTROL_STYLE = {
@@ -17,7 +22,11 @@ DROPDOWN_STYLE = {
 
 
 def session_selector() -> html.Div:
+    default_year = SUPPORTED_YEARS[-1]
     year_options = [{"label": str(y), "value": y} for y in reversed(SUPPORTED_YEARS)]
+    default_events = get_event_schedule(default_year)
+    race_options = [{"label": event["name"], "value": event["round"]} for event in default_events]
+    default_race = race_options[-1]["value"] if race_options else None
 
     return html.Div(
         className="surface-strip session-controls",
@@ -29,7 +38,7 @@ def session_selector() -> html.Div:
                     dcc.Dropdown(
                         id="year-dropdown",
                         options=year_options,
-                        value=2026,
+                        value=default_year,
                         clearable=False,
                         style=DROPDOWN_STYLE,
                         className="f1-dropdown",
@@ -42,7 +51,8 @@ def session_selector() -> html.Div:
                     html.Label("Race", style=SECTION_LABEL_STYLE),
                     dcc.Dropdown(
                         id="race-dropdown",
-                        options=[],
+                        options=race_options,
+                        value=default_race,
                         placeholder="Select a race...",
                         clearable=False,
                         style=DROPDOWN_STYLE,

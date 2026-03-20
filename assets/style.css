@@ -243,6 +243,12 @@ a {
   text-transform: uppercase;
 }
 
+.f1-dropdown,
+.f1-dropdown .Select,
+.f1-dropdown .Select-control {
+  color: var(--text-primary) !important;
+}
+
 .f1-dropdown .Select-control {
   min-height: 38px !important;
   background-color: var(--bg-surface) !important;
@@ -252,22 +258,51 @@ a {
   color: var(--text-primary) !important;
 }
 
+.f1-dropdown .Select-control,
+.f1-dropdown .Select,
+.f1-dropdown .Select-placeholder,
+.f1-dropdown .Select-value,
+.f1-dropdown .Select-value-label,
+.f1-dropdown .Select-input,
+.f1-dropdown .Select-input > input {
+  background-color: var(--bg-surface) !important;
+}
+
+.f1-dropdown .Select--single > .Select-control .Select-value,
+.f1-dropdown .Select.has-value.Select--single > .Select-control .Select-value .Select-value-label {
+  color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+}
+
 .f1-dropdown .Select-value-label,
 .f1-dropdown .Select-placeholder {
   color: var(--text-muted) !important;
   font-size: 13px !important;
+  opacity: 1 !important;
 }
 
 .f1-dropdown .Select-value-label {
   color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
 }
 
 .f1-dropdown .Select-input > input {
   color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  caret-color: var(--text-primary) !important;
 }
 
 .f1-dropdown .Select-arrow {
   border-top-color: var(--text-muted) !important;
+}
+
+.f1-dropdown .Select.is-disabled > .Select-control,
+.f1-dropdown .Select.is-disabled .Select-value-label,
+.f1-dropdown .Select.is-disabled .Select-placeholder {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-muted) !important;
+  -webkit-text-fill-color: var(--text-muted) !important;
+  opacity: 1 !important;
 }
 
 .f1-dropdown.is-focused .Select-control,
@@ -275,6 +310,14 @@ a {
   background-color: var(--bg-surface-hover) !important;
   border-color: var(--accent) !important;
   box-shadow: 0 0 0 1px var(--accent) !important;
+}
+
+.f1-dropdown.is-focused .Select,
+.f1-dropdown.is-focused .Select-value,
+.f1-dropdown.is-focused .Select-input,
+.f1-dropdown .Select-control:hover .Select-value,
+.f1-dropdown .Select-control:hover .Select-input {
+  background-color: var(--bg-surface-hover) !important;
 }
 
 .f1-dropdown .Select-menu-outer {

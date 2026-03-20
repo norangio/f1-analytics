@@ -26,20 +26,60 @@ QUALIFYING_PHASES = {
     "Q3": "Q3",
 }
 
+# Keep the default season available instantly on first page load even if
+# FastF1's remote schedule lookup is slow or temporarily unavailable.
+BUNDLED_EVENT_SCHEDULES = {
+    2026: [
+        {"round": 1, "name": "Australian Grand Prix"},
+        {"round": 2, "name": "Chinese Grand Prix"},
+        {"round": 3, "name": "Japanese Grand Prix"},
+        {"round": 4, "name": "Bahrain Grand Prix"},
+        {"round": 5, "name": "Saudi Arabian Grand Prix"},
+        {"round": 6, "name": "Miami Grand Prix"},
+        {"round": 7, "name": "Canadian Grand Prix"},
+        {"round": 8, "name": "Monaco Grand Prix"},
+        {"round": 9, "name": "Barcelona Grand Prix"},
+        {"round": 10, "name": "Austrian Grand Prix"},
+        {"round": 11, "name": "British Grand Prix"},
+        {"round": 12, "name": "Belgian Grand Prix"},
+        {"round": 13, "name": "Hungarian Grand Prix"},
+        {"round": 14, "name": "Dutch Grand Prix"},
+        {"round": 15, "name": "Italian Grand Prix"},
+        {"round": 16, "name": "Spanish Grand Prix"},
+        {"round": 17, "name": "Azerbaijan Grand Prix"},
+        {"round": 18, "name": "Singapore Grand Prix"},
+        {"round": 19, "name": "United States Grand Prix"},
+        {"round": 20, "name": "Mexico City Grand Prix"},
+        {"round": 21, "name": "São Paulo Grand Prix"},
+        {"round": 22, "name": "Las Vegas Grand Prix"},
+        {"round": 23, "name": "Qatar Grand Prix"},
+        {"round": 24, "name": "Abu Dhabi Grand Prix"},
+    ]
+}
+
 
 def get_event_schedule(year: int) -> list[dict]:
     """Return list of {round, name} for all events in a season."""
+    bundled = BUNDLED_EVENT_SCHEDULES.get(year)
+    if bundled is not None:
+        return bundled
     try:
-        schedule = fastf1.get_event_schedule(year, include_testing=False)
-        events = []
-        for _, row in schedule.iterrows():
-            events.append({
-                "round": int(row["RoundNumber"]),
-                "name": row["EventName"],
-            })
-        return events
+        return _get_event_schedule_cached(year)
     except Exception:
         return []
+
+
+@lru_cache(maxsize=16)
+def _get_event_schedule_cached(year: int) -> list[dict]:
+    """Fetch and cache season events from FastF1."""
+    schedule = fastf1.get_event_schedule(year, include_testing=False)
+    events = []
+    for _, row in schedule.iterrows():
+        events.append({
+            "round": int(row["RoundNumber"]),
+            "name": row["EventName"],
+        })
+    return events
 
 
 def get_available_sessions(year: int, round_number: int) -> list[dict]:
